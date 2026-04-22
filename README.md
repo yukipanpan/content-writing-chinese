@@ -40,14 +40,15 @@ Open `skills/SKILL.MD` + a template from `skills/assets/templates/` in any AI in
 
 ---
 
-### Layer 1 — Claude Code / Cursor / Copilot
+### Layer 1a — Claude Code (slash commands)
 
 ```bash
 git clone https://github.com/yukipanpan/content-writing-chinese-system.git
 cd content-writing-chinese-system
+claude   # open Claude Code in this repo
 ```
 
-`CLAUDE.md` is auto-loaded as project context. Use slash commands:
+`.claude/commands/` registers slash commands automatically. Just type:
 
 ```
 # From a URL
@@ -59,9 +60,29 @@ cd content-writing-chinese-system
 # Both — manual precision + auto breadth
 /phase1 https://graypaper.com  topic: Polkadot JAM  intent: deep dive for developers
 
+# After reviewing the outline
 /generate
+
+# Monthly recap
 /monthly-recap 2026-04
 ```
+
+---
+
+### Layer 1b — Cursor / Copilot / other coding AIs (natural language)
+
+```bash
+git clone https://github.com/yukipanpan/content-writing-chinese-system.git
+# Open the folder in Cursor, VS Code + Copilot, or any coding AI
+```
+
+`CLAUDE.md` is read automatically as project context. Then just describe what you want in natural language — the AI reads the workflow, understands the structure, and runs the scripts itself:
+
+> "Fetch https://polkadot.com/blog/jam-update and write an analytical piece on JAM for a Chinese Web3 audience."
+
+> "Search for recent articles on Polkadot JAM and generate an outline."
+
+No slash commands needed — the AI figures out which script to call.
 
 ---
 
@@ -75,29 +96,31 @@ cp .env.example .env   # set LLM_BASE_URL + LLM_MODEL + LLM_API_KEY
 Works with any OpenAI-compatible endpoint — OpenAI, Groq, Mistral, Ollama, LM Studio, or your company's internal gateway. See `.env.example` for provider examples. No API key? Set `LLM_PROVIDER=claude-code` to use the local `claude` CLI.
 
 ```bash
-# Manual URLs
+# Step 1 — fetch sources + generate English outline (manual URLs)
 python3 scripts/run_skill.py phase1 \
   --urls "https://example.com/post, https://youtu.be/xyz" \
   --intent "analytical piece on staking economics" \
   --generate-snippets --pr-body-file pr_body.md
 
-# Auto-discover from topic (uses DuckDuckGo by default, or Serper/Brave with a key)
+# Step 1 — auto-discover sources from a topic
 python3 scripts/run_skill.py phase1 \
   --topic "Polkadot JAM upgrade 2025" \
   --intent "analytical piece on JAM" \
   --top-n 5 --generate-snippets --pr-body-file pr_body.md
 
-# Both
+# Step 1 — both (manual precision + auto breadth)
 python3 scripts/run_skill.py phase1 \
   --urls "https://graypaper.com" --topic "Polkadot JAM" \
   --intent "deep dive" --generate-snippets --pr-body-file pr_body.md
 
-# Phase 2 — generate Chinese article from approved outline
+# Step 2 — review pr_body.md, then generate the Chinese article
 python3 scripts/run_skill.py phase2 --pr-body-file pr_body.md
 
-# Monthly recap
+# Optional — monthly recap article (synthesises all snippets from a given month)
 python3 scripts/run_skill.py monthly-recap --month 2026-04
 ```
+
+The article type (analytical, tutorial, explainer, pop-science…) is inferred automatically from your intent — see the Article types table below.
 
 ---
 
