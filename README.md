@@ -1,38 +1,42 @@
 # Content Writing Chinese System
 
-A Claude-powered content production system for writing high-quality Chinese articles from multiple English sources.
+A two-phase content pipeline for writing high-quality Chinese articles from English sources.
 
-Captures sources → generates structured snippets → produces Chinese articles for CSDN, WeChat, and monthly recaps.
+Capture sources → review an English outline → generate a Chinese article for CSDN, WeChat, and monthly recaps.
 
----
-
-## What This Produces
-
-| Type | Folder | Description |
-|------|--------|-------------|
-| Analysis / Opinion | `output/analysis/` | Multi-source analytical articles |
-| Tutorials | `output/tutorials/` | Step-by-step developer how-to guides |
-| Concept explainers | `output/explainers/` | Mechanism deep-dives from wiki/docs |
-| Pop-science | `output/science-pop/` | YouTube-based accessible articles |
-| Monthly recaps | `output/monthly-recap/` | Aggregated monthly digests |
-| Snippets | `references/snippets/` | Source records, versioned and deduplicated |
+Works with **Anthropic**, **OpenAI**, or **Ollama** (local). Runs via GitHub Actions, CLI, or as a Python library.
 
 ---
 
-## How to Use
+## How it works
 
-### Generate an article (Phase 1 — submit sources)
+```
+Phase 1                          Review              Phase 2
+──────────────────────────────   ──────────────────  ─────────────────────
+URLs + intent                    PR opens with       Comment /generate
+  → fetch web/YouTube/Twitter    English outline       → Chinese article
+  → generate snippets (KB)       ← edit if needed      → committed to PR
+  → infer article type
+  → English outline
+```
+
+---
+
+## Usage
+
+### Option A — GitHub Actions (recommended for teams)
+
+**Step 1 — Submit sources**
 
 > **Actions → Generate Content (Phase 1 — Outline) → Run workflow**
 
 | Field | What to enter |
 |-------|--------------|
-| `source_urls` | One or more URLs — blog posts, YouTube links, Twitter/X threads, docs pages. One per line or comma-separated. |
-| `intent` | Free-text description of what you want to write. Examples below. |
-| `generate_snippets` | `yes` to save sources into the knowledge base (recommended). Duplicates are auto-merged. |
+| `source_urls` | One or more URLs. One per line or comma-separated. |
+| `intent` | What you want to write — free text (see examples below). |
+| `generate_snippets` | `yes` to save sources into the knowledge base. |
 
 **Intent examples:**
-
 ```
 "analytical piece on JAM's timeline and what it means for Ethereum developers"
 "tutorial on how to set up an RPC node from the official docs"
@@ -40,28 +44,39 @@ Captures sources → generates structured snippets → produces Chinese articles
 "explain the new staking changes to a non-technical reader"
 ```
 
-The system automatically:
-- Fetches content from all URLs (web pages, YouTube transcripts, Twitter/X threads)
-- Generates and deduplicates snippets if requested
-- Infers the article type from your intent
-- Produces an English outline
+A pull request opens with the English outline in the description.
 
-A pull request opens with the outline in the description.
+**Step 2 — Review the outline**
 
----
+Read the PR description. Edit it directly if you want to change the angle or sections. When satisfied, comment `/generate` on the PR.
 
-### Review and approve the outline (Phase 2)
-
-The PR description contains the English outline. You can:
-- **Read it** to confirm the angle and coverage
-- **Edit it directly** in the PR description to adjust sections or claims
-- When satisfied, **comment `/generate`** on the PR
-
-The system generates the Chinese article and commits it to the PR branch. Merge when ready.
+The Chinese article is committed to the PR branch. Merge when ready.
 
 ---
 
-### Generate a monthly recap
+### Option B — CLI
+
+```bash
+# Phase 1: fetch sources, generate outline
+python3 scripts/run_skill.py phase1 \
+  --urls "https://example.com/post, https://youtu.be/xyz" \
+  --intent "analytical piece on staking economics" \
+  --generate-snippets \
+  --pr-body-file pr_body.md
+
+# Review pr_body.md, edit the outline section, then:
+
+# Phase 2: generate Chinese article from approved outline
+python3 scripts/run_skill.py phase2 \
+  --pr-body-file pr_body.md
+
+# Monthly recap
+python3 scripts/run_skill.py monthly-recap --month 2026-04
+```
+
+---
+
+### Option C — Monthly recap (automated)
 
 > **Actions → Generate Monthly Recap → Run workflow**
 
@@ -69,62 +84,104 @@ The system generates the Chinese article and commits it to the PR branch. Merge 
 |-------|--------------|
 | `month` | Format: `YYYY-MM` (e.g. `2026-04`) |
 
-Also runs automatically on the 1st of every month covering the previous month.
+Also runs automatically on the 1st of every month.
 
 ---
 
-## Repository Structure
+## Article types
+
+The system infers the type automatically from your intent and URLs:
+
+| Type | Template used | Output folder |
+|------|--------------|---------------|
+| Analytical / opinion | `web-remix-to-csdn.md` | `output/analysis/` |
+| Tutorial (from docs) | `polkadot-docs-to-csdn.md` | `output/tutorials/` |
+| Concept explainer (from wiki) | `wiki-to-csdn.md` | `output/explainers/` |
+| Pop-science (from YouTube) | `youtube-remix-to-csdn.md` | `output/science-pop/` |
+| Monthly recap | `monthly-recap.md` | `output/monthly-recap/` |
+
+---
+
+## Setup
+
+### 1. Fork or clone
+
+```bash
+git clone https://github.com/yourorg/content-writing-chinese-system.git
+cd content-writing-chinese-system
+pip install -r requirements.txt
+```
+
+### 2. Configure your LLM provider
+
+Copy `.env.example` to `.env` and fill in your key:
+
+```bash
+cp .env.example .env
+```
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `LLM_PROVIDER` | `anthropic` | Choose: `anthropic` \| `openai` \| `ollama` |
+| `ANTHROPIC_API_KEY` | — | Required for Anthropic |
+| `ANTHROPIC_MODEL` | `claude-haiku-4-5-20251001` | Optional model override |
+| `OPENAI_API_KEY` | — | Required for OpenAI |
+| `OPENAI_MODEL` | `gpt-4o-mini` | Optional model override |
+| `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama endpoint |
+| `OLLAMA_MODEL` | `llama3` | Ollama model name |
+
+### 3. For GitHub Actions
+
+Go to **Settings → Secrets and variables → Actions** and add:
+
+- `ANTHROPIC_API_KEY` (or your chosen provider's key)
+- `LLM_PROVIDER` (as a variable, not secret) — optional, defaults to `anthropic`
+
+---
+
+## Repository structure
 
 ```
 .
-├── skills/                     ← Claude prompt templates (the core logic)
-│   ├── SKILL.MD                ← Router: which template to use when
+├── skills/                         ← Prompt templates (the core logic)
+│   ├── SKILL.MD                    ← Router: which template to use when
 │   └── assets/
-│       ├── styles/             ← Writing style guides
-│       └── templates/          ← One file per article/snippet type
+│       ├── styles/                 ← Writing style guides
+│       └── templates/              ← One file per article type
 ├── scripts/
-│   ├── fetcher.py              ← URL content extraction (web/YouTube/Twitter)
-│   ├── snippets.py             ← Snippet generation, deduplication, update
-│   └── run_skill.py            ← Main orchestrator (phase1 / phase2 / monthly-recap)
+│   ├── llm.py                      ← Provider-agnostic LLM client
+│   ├── fetcher.py                  ← URL content extraction (web/YouTube/Twitter)
+│   ├── snippets.py                 ← Snippet generation, deduplication, update
+│   └── run_skill.py                ← Main orchestrator (phase1 / phase2 / monthly-recap)
 ├── .github/workflows/
-│   ├── generate.yml            ← Phase 1: fetch + snippets + outline → PR
-│   ├── on-generate-comment.yml ← Phase 2: /generate comment → Chinese article
-│   └── generate-monthly-recap.yml
+│   ├── generate.yml                ← Phase 1: fetch + snippets + outline → PR
+│   ├── on-generate-comment.yml     ← Phase 2: /generate comment → Chinese article
+│   └── generate-monthly-recap.yml  ← Manual + scheduled monthly recap
 ├── references/
-│   └── snippets/               ← Accumulated source records
+│   └── snippets/                   ← Accumulated source records (knowledge base)
 ├── output/
 │   ├── analysis/
 │   ├── tutorials/
 │   ├── explainers/
 │   ├── science-pop/
 │   └── monthly-recap/
+├── .env.example
 └── requirements.txt
 ```
 
 ---
 
-## Setup
-
-1. Fork or clone this repository
-2. Go to **Settings → Secrets and variables → Actions**
-3. Add a secret named `ANTHROPIC_API_KEY` with your Anthropic API key
-4. Done — all three workflows are ready to run
-
----
-
-## Supported URL Types
+## Supported URL types
 
 | Source | How content is extracted |
 |--------|--------------------------|
-| Any webpage / blog | `requests` + `BeautifulSoup` (main content only) |
+| Any webpage / blog | `requests` + `BeautifulSoup` |
 | YouTube | `youtube-transcript-api` (transcript text) |
-| Twitter / X | ADHX API (full thread + article content) |
+| Twitter / X | ADHX API (full thread content) |
 
 ---
 
-## Article Output Language
+## Output language
 
 Articles are always written in **Chinese (中文)**.
-The PR description (outline, status messages, instructions) is always in **English**.
-
-Use browser translation to read the generated articles if needed.
+PR descriptions, outlines, and status messages are always in **English**.
