@@ -54,6 +54,7 @@ General style guidelines that apply to all article types. Specific article types
 - ❌ Pure positive narrative that ignores problems
 - ❌ Tone that defends the project team
 - ❌ Official-sounding lines like "everything is going according to plan"
+- ❌ **Contrast-framing sentences**: "不是……不是……而是……" / "the problem isn't X or Y, it's Z" — AI overuses this structure to sound insightful. State the real point directly instead.
 
 ---
 

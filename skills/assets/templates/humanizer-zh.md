@@ -135,7 +135,8 @@ Output format:
 
 **⑨ Negative parallel structure**
 - Symptom: "这不仅仅是……，而是……" (this is not just…, it is…), "不只是……，更是……" (not only…, but also…)
-- Fix: directly state the most important point
+- Extended symptom: three-part elimination — "不是……不是……而是……" (not X, not Y, but Z) — AI uses this to mimic "breaking conventional wisdom". The reader sees through it immediately.
+- Fix: directly state the most important point — do not build up to it by eliminating decoys
 
 **⑩ Overuse of the rule of three**
 - Symptom: descriptions always come in three: "无缝、直观和强大" (seamless, intuitive, and powerful), "高效、精准、可靠" (efficient, precise, reliable)
