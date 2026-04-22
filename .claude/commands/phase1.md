@@ -1,31 +1,68 @@
-Extract URLs and intent from the user's input, run Phase 1, and display the outline for review.
+Fetch sources and generate an English outline for review.
 
-**Arguments:** `$ARGUMENTS` — any combination of URLs (http/https) and free-text intent.
+Accepts manual URLs, a topic for auto-discovery, or both combined.
 
-## Steps
+**Arguments:** `$ARGUMENTS` — any combination of URLs, a topic keyword, and intent description.
 
-1. Parse `$ARGUMENTS`:
-   - Extract all tokens that start with `http://` or `https://` — these are the URLs.
-   - The remaining text is the intent.
-   - If no URLs are found, ask the user to provide at least one URL before continuing.
-   - If no intent text is found, ask the user what they want to write before continuing.
+## Parsing $ARGUMENTS
 
-2. Run Phase 1:
+Extract three things from `$ARGUMENTS`:
 
+1. **URLs** — any tokens starting with `http://` or `https://`
+2. **Topic** — text after `topic:` label (e.g. `topic: Polkadot JAM upgrade 2025`)
+3. **Intent** — remaining free text describing what to write
+
+At least one of URLs or topic must be present. If neither is found, ask the user before proceeding.
+
+## Examples
+
+```
+/phase1 https://polkadot.com/blog/jam-update intent: analytical piece on JAM for developers
+/phase1 topic: Polkadot JAM upgrade 2025 intent: analytical piece for Chinese Web3 audience
+/phase1 https://graypaper.com topic: Polkadot JAM intent: deep dive for developers
+```
+
+## Running the command
+
+**URLs only:**
 ```bash
 python3 scripts/run_skill.py phase1 \
   --urls "<comma-separated URLs>" \
-  --intent "<intent text>" \
+  --intent "<intent>" \
   --generate-snippets \
   --pr-body-file pr_body.md
 ```
 
-3. After the command completes, read `pr_body.md` and display the outline section to the user.
+**Topic only (auto-discover sources):**
+```bash
+python3 scripts/run_skill.py phase1 \
+  --topic "<topic>" \
+  --intent "<intent>" \
+  --top-n 5 \
+  --generate-snippets \
+  --pr-body-file pr_body.md
+```
 
-4. Ask the user: "Does this outline look right? You can ask me to adjust the angle, sections, or thesis — or say 'looks good' to run `/generate` and produce the Chinese article."
+**Both (manual + auto-discovery for richer source mix):**
+```bash
+python3 scripts/run_skill.py phase1 \
+  --urls "<URLs>" \
+  --topic "<topic>" \
+  --intent "<intent>" \
+  --top-n 5 \
+  --generate-snippets \
+  --pr-body-file pr_body.md
+```
 
-## Edge cases
+## After the command
 
-- If `pr_body.md` is not found after the run, tell the user the script may have failed and show the command output.
-- If the user provides a YouTube URL or Twitter/X URL: remind them these work locally but are blocked in GitHub Actions CI. The script will fetch them now.
-- If the user provides only pasted text (no URLs): tell them to use the Layer 0 path — open `skills/SKILL.MD` in any AI chat and paste the text directly.
+1. Read `pr_body.md` and show the outline section to the user.
+2. Show the Sources section so the user can see which URLs were manual, auto-discovered, and loaded from the knowledge base.
+3. Ask: "Does this outline look right? Edit any section or angle, then run `/generate` to produce the Chinese article."
+
+## Notes
+
+- YouTube and Twitter/X URLs work locally but are blocked in GitHub Actions CI.
+- Auto-discovery uses DuckDuckGo by default (free, no key). Set `SEARCH_API_KEY` in `.env` for Google results via Serper.
+- URLs already in the knowledge base (references/snippets/) are loaded from cache — no re-fetch needed.
+- If only pasted text with no URLs or topic: use the Layer 0 path — open `skills/SKILL.MD` in any AI chat and paste the text directly.

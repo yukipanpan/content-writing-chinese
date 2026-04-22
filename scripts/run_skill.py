@@ -1,24 +1,40 @@
 """
 run_skill.py — Two-phase article generation orchestrator.
 
-Phase 1 (generate.yml calls this):
+Phase 1:
+  Accepts manual URLs, an auto-discovery topic, or both.
   fetch URLs → generate snippets → infer article type → English outline → PR metadata
 
-Phase 2 (on-generate-comment.yml calls this):
+Phase 2:
   read outline + metadata from PR → generate Chinese article
 
 Usage:
-  # Phase 1
+  # Phase 1 — manual URLs only
   python3 scripts/run_skill.py phase1 \
     --urls "https://a.com, https://youtu.be/xyz" \
-    --intent "write a tutorial on XCM for Ethereum devs" \
+    --intent "analytical piece on XCM for Ethereum devs" \
+    --generate-snippets \
+    --pr-body-file pr_body.md
+
+  # Phase 1 — auto-discover sources from a topic
+  python3 scripts/run_skill.py phase1 \
+    --topic "Polkadot JAM upgrade 2025" \
+    --intent "analytical piece on JAM for Chinese Web3 developers" \
+    --top-n 5 \
+    --generate-snippets \
+    --pr-body-file pr_body.md
+
+  # Phase 1 — both: manual URLs + auto-discovery (richer source mix)
+  python3 scripts/run_skill.py phase1 \
+    --urls "https://graypaper.com" \
+    --topic "Polkadot JAM upgrade" \
+    --intent "analytical piece on JAM" \
     --generate-snippets \
     --pr-body-file pr_body.md
 
   # Phase 2
   python3 scripts/run_skill.py phase2 \
-    --pr-body-file pr_body.md \
-    --output-dir output/polkadot-hype-articles
+    --pr-body-file pr_body.md
 """
 
 import argparse
@@ -40,6 +56,7 @@ import llm
 
 from fetcher import fetch_all, FetchResult
 from snippets import process_all, SNIPPET_DIR
+from discover import discover_urls
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 
@@ -192,8 +209,29 @@ def build_pr_body(
     intent: str,
     outline: str,
     metadata: dict,
+    manual_urls: list[str] | None = None,
+    discovered_urls: list[str] | None = None,
+    kb_matches: dict[str, str] | None = None,
 ) -> str:
-    source_lines = "\n".join(f"- {u}" for u in urls)
+    # Build labeled source section
+    manual_urls    = manual_urls    or []
+    discovered_urls = discovered_urls or []
+    kb_matches     = kb_matches     or {}
+
+    source_sections = []
+    if manual_urls:
+        lines = "\n".join(f"- {u}" for u in manual_urls)
+        source_sections.append(f"**Manual ({len(manual_urls)}):**\n{lines}")
+    if discovered_urls:
+        lines = "\n".join(f"- {u}" for u in discovered_urls)
+        source_sections.append(f"**Auto-discovered ({len(discovered_urls)}):**\n{lines}")
+    if kb_matches:
+        lines = "\n".join(f"- `{v}` — {k}" for k, v in kb_matches.items())
+        source_sections.append(f"**Loaded from knowledge base ({len(kb_matches)}):**\n{lines}")
+    if not source_sections:
+        source_sections.append("\n".join(f"- {u}" for u in urls))
+
+    source_lines = "\n\n".join(source_sections)
 
     snippet_lines = "_(snippets not generated)_"
     if snippet_results:
@@ -271,6 +309,26 @@ def parse_pr_body(pr_body: str) -> tuple[str, dict]:
     return outline, metadata
 
 
+# ── KB deduplication ─────────────────────────────────────────────────────────
+
+def find_kb_matches(urls: list[str], snippet_dir: Path) -> dict[str, str]:
+    """
+    Check which URLs already have a snippet in the knowledge base.
+    Returns {url: snippet_filename} for matches found.
+    """
+    if not snippet_dir.exists():
+        return {}
+
+    # Build index: url → snippet filename
+    url_index: dict[str, str] = {}
+    for f in snippet_dir.glob("*.md"):
+        text = f.read_text(errors="ignore")
+        for match in re.finditer(r'url:\s*"([^"]+)"', text):
+            url_index[match.group(1).strip()] = f.name
+
+    return {url: url_index[url] for url in urls if url in url_index}
+
+
 # ── Output helpers ────────────────────────────────────────────────────────────
 
 def parse_urls(raw: str) -> list[str]:
@@ -291,45 +349,88 @@ def save_article(content: str, article_type: str, urls: list[str], output_dir: s
 # ── Phase 1 ───────────────────────────────────────────────────────────────────
 
 def phase1(args):
-    urls = parse_urls(args.urls)
-    if not urls:
-        sys.exit("--urls is required for phase1")
+    manual_urls    = parse_urls(args.urls or "")
+    discovered_urls: list[str] = []
 
-    # 1. Fetch all URLs
-    print(f"\n[1/4] Fetching {len(urls)} URL(s)…", file=sys.stderr)
-    source_content, fetch_warnings = fetch_all(urls)
+    if not manual_urls and not args.topic:
+        sys.exit("Provide at least one of --urls or --topic")
+
+    total_steps = 5 if args.topic else 4
+
+    # 1. Auto-discover URLs from topic (if provided)
+    if args.topic:
+        n = getattr(args, "top_n", 5)
+        print(f"\n[1/{total_steps}] Discovering sources for topic: {args.topic!r}…",
+              file=sys.stderr)
+        discovered_urls = discover_urls(args.topic, args.intent, n=n)
+        print(f"  found {len(discovered_urls)} URL(s)", file=sys.stderr)
+    else:
+        print(f"\n[Skipping auto-discovery — no --topic provided]", file=sys.stderr)
+
+    # Merge and deduplicate (manual URLs take priority, appear first)
+    seen: set[str] = set()
+    all_urls: list[str] = []
+    for url in manual_urls + discovered_urls:
+        if url not in seen:
+            seen.add(url)
+            all_urls.append(url)
+
+    step = 2 if args.topic else 1
+
+    # 2. Check knowledge base for already-processed URLs
+    print(f"\n[{step}/{total_steps}] Checking knowledge base for cached sources…",
+          file=sys.stderr)
+    kb_matches = find_kb_matches(all_urls, SNIPPET_DIR)
+    if kb_matches:
+        for url, fname in kb_matches.items():
+            print(f"  ↩ KB hit: {fname} ← {url}", file=sys.stderr)
+    step += 1
+
+    # 3. Fetch URLs not already in KB
+    urls_to_fetch = [u for u in all_urls if u not in kb_matches]
+    print(f"\n[{step}/{total_steps}] Fetching {len(urls_to_fetch)} URL(s)…",
+          file=sys.stderr)
+    source_content, fetch_warnings = fetch_all(urls_to_fetch)
     for w in fetch_warnings:
         print(f"  {w}", file=sys.stderr)
+    step += 1
 
-    # 2. Generate snippets (optional)
+    # 4. Generate snippets (optional)
     snippet_results = []
     if args.generate_snippets:
-        print(f"\n[2/4] Generating & deduplicating snippets…", file=sys.stderr)
-        fetched_pairs = [(url, source_content) for url in urls]
+        print(f"\n[{step}/{total_steps}] Generating & deduplicating snippets…",
+              file=sys.stderr)
+        fetched_pairs = [(url, source_content) for url in urls_to_fetch]
         snippet_results = process_all(fetched_pairs, SNIPPET_DIR)
+    step += 1
 
-    # 3. Infer article type
-    print(f"\n[3/4] Inferring article type from intent…", file=sys.stderr)
-    article_type = infer_article_type(args.intent, urls)
+    # 5. Infer article type + generate outline
+    print(f"\n[{step}/{total_steps}] Inferring article type & generating outline…",
+          file=sys.stderr)
+    article_type = infer_article_type(args.intent, all_urls)
+    outline      = generate_outline(source_content, article_type, args.intent)
 
-    # 4. Generate English outline
-    print(f"\n[4/4] Generating English outline…", file=sys.stderr)
-    outline = generate_outline(source_content, article_type, args.intent)
-
-    # Build metadata (embedded in PR for Phase 2 to read)
+    # Build metadata
     metadata = {
-        "source_urls":   urls,
-        "article_type":  article_type,
-        "intent":        args.intent,
-        "snippet_files": [r.filename for r in snippet_results],
+        "source_urls":      all_urls,
+        "manual_urls":      manual_urls,
+        "discovered_urls":  discovered_urls,
+        "kb_matches":       kb_matches,
+        "article_type":     article_type,
+        "intent":           args.intent,
+        "snippet_files":    [r.filename for r in snippet_results],
     }
 
     # Write PR body file
-    pr_body = build_pr_body(urls, snippet_results, article_type, args.intent, outline, metadata)
+    pr_body = build_pr_body(
+        all_urls, snippet_results, article_type, args.intent, outline, metadata,
+        manual_urls=manual_urls,
+        discovered_urls=discovered_urls,
+        kb_matches=kb_matches,
+    )
     Path(args.pr_body_file).write_text(pr_body)
     print(f"\n  PR body written → {args.pr_body_file}", file=sys.stderr)
 
-    # Write snippet-commit flag for Actions to detect
     if snippet_results:
         Path("snippet_changes.txt").write_text(
             "\n".join(r.filename for r in snippet_results)
@@ -401,10 +502,12 @@ def main():
 
     # phase1
     p1 = sub.add_parser("phase1")
-    p1.add_argument("--urls",            required=True)
-    p1.add_argument("--intent",          required=True)
+    p1.add_argument("--urls",             default="",   help="Manual source URLs (comma or newline separated)")
+    p1.add_argument("--topic",            default=None, help="English topic/keyword for auto-discovery")
+    p1.add_argument("--top-n",            default=5, type=int, help="Max auto-discovered URLs (default 5)")
+    p1.add_argument("--intent",           required=True)
     p1.add_argument("--generate-snippets", action="store_true")
-    p1.add_argument("--pr-body-file",    default="pr_body.md")
+    p1.add_argument("--pr-body-file",     default="pr_body.md")
 
     # phase2
     p2 = sub.add_parser("phase2")
