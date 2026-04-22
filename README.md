@@ -1,251 +1,159 @@
 # Content Writing System
 
-Turn any English source into a polished Chinese article — with any AI, no API key required to get started.
-
-A structured three-step workflow: feed sources (web pages, YouTube videos, Twitter/X threads) → review an English outline → generate the Chinese article. Works with Claude Code, Cursor, Copilot, ChatGPT, or any AI chat interface. Scripts and GitHub Actions are optional automation layers on top of the same templates.
+Turn English sources into polished Chinese articles — with any AI, in three steps.
 
 ---
 
-## The workflow
+## How it works
 
 ```
-Step 1 — Feed sources          Step 2 — Review outline     Step 3 — Generate article
-──────────────────────────     ─────────────────────────   ──────────────────────────
-URLs or pasted text            English outline appears     Approve → Chinese article
-  → fetch content              ← edit angle / sections     saved to output/
-  → save snippets to KB        ← adjust thesis
-  → infer article type
-  → draft English outline
+Step 1 — Feed sources        Step 2 — Review outline      Step 3 — Generate article
+────────────────────────     ──────────────────────────   ──────────────────────────
+URLs or a topic keyword  →   English outline appears   →  Approve → Chinese article
+  auto-discover sources       edit angle / sections        saved to output/
+  fetch web / YouTube / X     adjust thesis
+  save snippets to KB
 ```
 
-The same three steps run whether you are pasting text into ChatGPT, running `/phase1` in Claude Code, executing a CLI command, or triggering a GitHub Actions workflow.
+The same workflow runs whether you paste text into ChatGPT, use `/phase1` in Claude Code, run a CLI command, or trigger GitHub Actions.
+
+---
+
+## Quick start
+
+No installation. No API key.
+
+1. Clone the repo
+2. Open `skills/SKILL.MD` in any AI chat (ChatGPT, Claude.ai, Gemini…)
+3. Paste your source content and describe what you want to write
+4. Done — the AI routes to the right template and runs the workflow
+
+For automated URL fetching, YouTube transcripts, and Twitter/X threads: use Layer 2 below.
+
+---
+
+## Four ways to run it
+
+### Layer 0 — Any AI chat, zero setup
+
+Open `skills/SKILL.MD` + a template from `skills/assets/templates/` in any AI interface. Paste your source and intent. No code, no keys, no install.
+
+---
+
+### Layer 1 — Claude Code / Cursor / Copilot
+
+```bash
+git clone https://github.com/yukipanpan/content-writing-chinese-system.git
+cd content-writing-chinese-system
+```
+
+`CLAUDE.md` is auto-loaded as project context. Use slash commands:
+
+```
+# From a URL
+/phase1 https://polkadot.com/blog/jam-update  intent: analytical piece on JAM
+
+# Auto-discover sources from a topic
+/phase1 topic: Polkadot JAM upgrade 2025  intent: analytical piece on JAM
+
+# Both — manual precision + auto breadth
+/phase1 https://graypaper.com  topic: Polkadot JAM  intent: deep dive for developers
+
+/generate
+/monthly-recap 2026-04
+```
+
+---
+
+### Layer 2 — CLI scripts
+
+```bash
+pip install -r requirements.txt
+cp .env.example .env   # set LLM_BASE_URL + LLM_MODEL + LLM_API_KEY
+```
+
+Works with any OpenAI-compatible endpoint — OpenAI, Groq, Mistral, Ollama, LM Studio, or your company's internal gateway. See `.env.example` for provider examples. No API key? Set `LLM_PROVIDER=claude-code` to use the local `claude` CLI.
+
+```bash
+# Manual URLs
+python3 scripts/run_skill.py phase1 \
+  --urls "https://example.com/post, https://youtu.be/xyz" \
+  --intent "analytical piece on staking economics" \
+  --generate-snippets --pr-body-file pr_body.md
+
+# Auto-discover from topic (uses DuckDuckGo by default, or Serper/Brave with a key)
+python3 scripts/run_skill.py phase1 \
+  --topic "Polkadot JAM upgrade 2025" \
+  --intent "analytical piece on JAM" \
+  --top-n 5 --generate-snippets --pr-body-file pr_body.md
+
+# Both
+python3 scripts/run_skill.py phase1 \
+  --urls "https://graypaper.com" --topic "Polkadot JAM" \
+  --intent "deep dive" --generate-snippets --pr-body-file pr_body.md
+
+# Phase 2 — generate Chinese article from approved outline
+python3 scripts/run_skill.py phase2 --pr-body-file pr_body.md
+
+# Monthly recap
+python3 scripts/run_skill.py monthly-recap --month 2026-04
+```
+
+---
+
+### Layer 3 — GitHub Actions
+
+**Actions → Generate Content (Phase 1) → Run workflow**
+
+| Field | Notes |
+|-------|-------|
+| `source_urls` | Web pages only in CI — YouTube and Twitter/X are IP-blocked by those platforms |
+| `intent` | Free text |
+| `generate_snippets` | `yes` to save to KB |
+
+A PR opens with the English outline. Review it, then comment `/generate`. The article is committed to the branch.
+
+Setup: add `LLM_BASE_URL`, `LLM_MODEL`, and your API key to **Settings → Secrets and variables → Actions**.
 
 ---
 
 ## Supported sources
 
-| Source | What you get | Local | GitHub Actions CI |
-|--------|-------------|-------|-------------------|
-| Any webpage / blog | Full article body via BeautifulSoup | Yes | Yes |
-| YouTube video | Full transcript via youtube-transcript-api | Yes | Blocked by YouTube |
-| Twitter / X thread | Full post content via ADHX API (no key needed) | Yes | Blocked by platform DNS |
-
-**YouTube and Twitter/X are first-class sources.** They work in every local environment. GitHub Actions CI runners are blocked by both platforms — this is a platform-level restriction, not a missing feature. Use Layer 2 CLI scripts or Layer 1 coding AI for these sources.
-
----
-
-## Example outputs
-
-### Snippet — a source record saved to the knowledge base
-
-Snippets are the building blocks of the knowledge base. Each one captures a source, its key claims, and a one-liner summary — structured so Claude can reference them later when writing articles or monthly recaps.
-
-```markdown
-## Polkadot JAM Upgrade — Roadmap and Developer Impact
-
-**id:** S-20260115-0042  |  **created:** 2026-01-15  |  **updated:** 2026-03-08
-
-## 一句话总结
-JAM 是 Polkadot 对 Relay Chain 的根本性重构：用「积累-汇聚」计算模型替代现有的
-平行链插槽机制，目标是让任意计算（不限于区块链）都能在共享安全下运行。
-
-## 核心要点
-- JAM 不是「新链」，是现有 Relay Chain 的替代执行层，兼容 XCMP 和现有平行链
-- 核心原语：Service（服务单元）、Work Package（工作包）、Accumulate + Refine 双阶段执行
-- Web3 Foundation 设置 1000 万美元实现者奖金，奖励非 Parity 团队的独立 JAM 实现
-- 主网部署时间未定；2026 Q3 前至少需要 3 个独立客户端通过兼容性测试
-```
-
-→ [Full snippet example](examples/example-snippet.md)
-
----
-
-### Outline — what appears for review after Step 1
-
-The outline is in English so anyone on the team can read and edit it before the Chinese article is written.
-
-```
-**Working title:** JAM Is Not a Blockchain — And That's the Point
-
-**Type:** analytical
-
-**Thesis / angle:** Ethereum developers evaluating Polkadot are still thinking in terms
-of "chains" and "slots." JAM erases that mental model entirely: it's a shared computation
-substrate where the concept of a parachain becomes one possible service among many.
-
-**Sections:**
-1. The problem JAM is solving — Why the relay chain model created artificial constraints
-2. What JAM actually is — The Refine / Accumulate model explained without jargon
-3. The timeline that matters — Why the Q3 2026 client milestone is the real signal
-4. What this means for Ethereum developers — Honest tradeoffs vs. staying on L2s
-5. The open question — Whether JAM's abstraction is a superpower or a coordination trap
-
-**Key claims to make:**
-- JAM's 10M prize is a hedge against client monoculture, not a development bounty
-- EVM on JAM will exist as a "service," not a native assumption — bigger shift than docs suggest
-- Q3 2026 milestone is the earliest meaningful signal; anything before is vaporware risk
-```
-
-→ [Full outline example](examples/example-outline.md)
-
----
-
-### Article — the Chinese output (Step 3)
-
-Saved to `output/analysis/`. Written in the voice of a cold, critical analyst — not marketing copy.
-
-```markdown
-# JAM 不是区块链——这才是重点
-
-如果你是一个 Ethereum 开发者，正在重新评估 Polkadot 的价值，你大概率还在用
-「链」「插槽」「平行链」这套词汇思考问题。这很正常，因为 Polkadot 过去五年的
-营销材料就是这么写的。
-
-但 JAM 发布之后，这套词汇就过时了。
-
-Gavin Wood 在 GrayPaper 里说得很直接：「JAM 不是区块链，它是一个碰巧具有类区块链
-属性的计算模型。」这句话不是在玩文字游戏。它意味着，Polkadot 下一代执行层的设计
-前提，是把「区块链」这个概念当作一种特殊情况——而不是基础假设。
-
-对于从 Ethereum 生态迁移过来的开发者，这个转变比技术文档暗示的要大得多。
-…
-```
-
-→ [Full article example](examples/example-article.md)
-
----
-
-## Getting started
-
-### Fastest path — no setup required
-
-1. Clone the repo (or just download `skills/SKILL.MD` and the template files)
-2. Open `skills/SKILL.MD` in any AI chat window (ChatGPT, Claude.ai, Gemini, etc.)
-3. Paste your source content and describe what you want to write
-4. The AI routes to the right template and runs the three-step workflow
-
-**No API key needed. No installation needed.** The templates are the product.
-
-For YouTube videos: paste the transcript text directly. For Twitter/X threads: paste the thread text directly. Or use Layer 2 scripts to fetch these automatically.
-
----
-
-### Layer 0 — Templates only (any AI, zero config)
-
-Open `skills/SKILL.MD` in any AI assistant alongside the relevant template file from `skills/assets/templates/`. Tell the AI your source content and intent. It handles the rest.
-
-This works in ChatGPT, Claude.ai, Gemini, Copilot Chat, or any other AI chat interface — no coding environment required.
-
-See `skills/SKILL.MD` for the zero-config usage guide and routing table.
-
----
-
-### Layer 1 — With a coding AI (Claude Code, Cursor, Copilot)
-
-```bash
-git clone https://github.com/yourorg/content-writing-chinese-system.git
-cd content-writing-chinese-system
-```
-
-Open the repo in your coding AI. `CLAUDE.md` is auto-loaded by Claude Code; Cursor and Copilot read it as project context too.
-
-Use slash commands (Claude Code):
-
-```
-/phase1 https://example.com/article analytical piece on staking economics
-/generate
-/monthly-recap 2026-04
-```
-
-Or just describe what you want in natural language — the AI reads `CLAUDE.md` and knows the workflow.
-
----
-
-### Layer 2 — With automation scripts
-
-Install dependencies and point at your preferred model:
-
-```bash
-pip install -r requirements.txt
-cp .env.example .env
-# Edit .env — see examples inside for OpenAI, Groq, Ollama, and more
-```
-
-This system works with **any OpenAI-compatible endpoint** — OpenAI, Groq, Mistral, Together AI, Ollama, LM Studio, your company's internal gateway, or any other provider. Set three variables:
-
-| Variable | What it does |
-|----------|-------------|
-| `LLM_BASE_URL` | API endpoint (default: `https://api.openai.com/v1`) |
-| `LLM_MODEL` | Model name — provider-specific, your choice |
-| `LLM_API_KEY` | API key (use any string for keyless local endpoints) |
-
-No API key at all? Use Claude Code: set `LLM_PROVIDER=claude-code` and the local `claude` CLI handles everything.
-
-Run the pipeline:
-
-```bash
-# Phase 1: fetch sources, generate snippets, produce English outline
-python3 scripts/run_skill.py phase1 \
-  --urls "https://example.com/post, https://youtu.be/xyz" \
-  --intent "analytical piece on staking economics" \
-  --generate-snippets \
-  --pr-body-file pr_body.md
-
-# Review pr_body.md, edit the outline section, then:
-
-# Phase 2: generate Chinese article from the approved outline
-python3 scripts/run_skill.py phase2 \
-  --pr-body-file pr_body.md
-
-# Monthly recap: summarise all snippets from a given month
-python3 scripts/run_skill.py monthly-recap --month 2026-04
-```
-
-Layer 2 enables: automatic YouTube transcript extraction, automatic Twitter/X thread fetching (ADHX API, no key needed), and snippet knowledge base management with deduplication.
-
----
-
-### Layer 3 — GitHub Actions (team async workflow)
-
-Go to **Actions → Generate Content (Phase 1 — Outline) → Run workflow**:
-
-| Field | What to enter |
-|-------|--------------|
-| `source_urls` | One or more URLs, one per line or comma-separated. Web pages and blog posts work in CI. YouTube and Twitter/X must be run locally. |
-| `intent` | What you want to write — free text. |
-| `generate_snippets` | `yes` to save sources into the knowledge base. |
-
-A pull request opens with the English outline in the description. Review it, edit if needed, then comment `/generate` on the PR. The Chinese article is committed to the PR branch.
-
-**CI limitation:** GitHub Actions runners cannot reach YouTube or Twitter/X. Use Layer 1 or Layer 2 for those sources, then paste the extracted content into the workflow.
-
-For GitHub Actions setup, add your API key to **Settings → Secrets and variables → Actions**:
-- `ANTHROPIC_API_KEY` (or your chosen provider's key)
-- `LLM_PROVIDER` as a variable (optional, defaults to `anthropic`)
+| Source | How | Local | CI |
+|--------|-----|-------|----|
+| Any webpage / blog | BeautifulSoup scrape | ✅ | ✅ |
+| YouTube video | youtube-transcript-api (full transcript) | ✅ | ❌ IP-blocked |
+| Twitter / X thread | ADHX API — no key needed | ✅ | ❌ DNS-blocked |
 
 ---
 
 ## Article types
 
-The system infers the article type automatically from your intent and URLs:
+Inferred automatically from your intent and URLs:
 
-| Type | Template used | Output folder |
-|------|--------------|---------------|
+| Type | Template | Output folder |
+|------|----------|---------------|
 | Analytical / opinion | `web-remix-to-csdn.md` | `output/analysis/` |
 | Tutorial (from docs) | `polkadot-docs-to-csdn.md` | `output/tutorials/` |
-| Concept explainer (from wiki) | `wiki-to-csdn.md` | `output/explainers/` |
-| Pop-science (from YouTube) | `youtube-remix-to-csdn.md` | `output/science-pop/` |
+| Concept explainer | `wiki-to-csdn.md` | `output/explainers/` |
+| Pop-science (YouTube) | `youtube-remix-to-csdn.md` | `output/science-pop/` |
 | Monthly recap | `monthly-recap.md` | `output/monthly-recap/` |
 
 ---
 
-## Knowledge base (snippets)
+## Knowledge base
 
-Every time you run Phase 1 with `--generate-snippets`, the fetched sources are saved as structured snippet files in `references/snippets/`. Each snippet records the source URL, key claims, and a one-line Chinese summary.
+Every Phase 1 run with `--generate-snippets` saves structured records to `references/snippets/`. Snippets accumulate and deduplicate automatically — re-fetching a known URL updates the existing snippet instead of creating a duplicate. The monthly recap synthesises all snippets from a given month into one article.
 
-Snippets accumulate over time and are deduplicated automatically — if you fetch the same URL twice, the existing snippet is updated rather than duplicated.
+---
 
-The monthly recap command reads all snippets from a given month and synthesises them into a single Chinese recap article. This is the primary way the knowledge base gets consumed.
+## Example outputs
+
+→ [Snippet example](examples/example-snippet.md) — a structured source record saved to the KB
+
+→ [Outline example](examples/example-outline.md) — the English outline that appears after Step 1
+
+→ [Article example](examples/example-article.md) — the Chinese article produced in Step 3
 
 ---
 
@@ -253,48 +161,23 @@ The monthly recap command reads all snippets from a given month and synthesises 
 
 ```
 .
-├── skills/                         ← Templates and routing (the core product)
-│   ├── SKILL.MD                    ← Router: which template to use when; zero-config guide
+├── skills/                      ← Templates and routing (the core product)
+│   ├── SKILL.MD                 ← Router + zero-config usage guide
 │   └── assets/
-│       ├── styles/                 ← Writing style guides
-│       │   ├── _base.md            ← Base style (voice, tone, critical perspective)
-│       │   └── monthly-recap.md    ← Monthly recap style (extends _base)
-│       └── templates/              ← One file per article type
-│           ├── snippet.md
-│           ├── web-remix-to-csdn.md
-│           ├── youtube-remix-to-csdn.md
-│           ├── polkadot-docs-to-csdn.md
-│           ├── wiki-to-csdn.md
-│           ├── monthly-recap.md
-│           ├── github-digest.md
-│           ├── event-review.md
-│           └── humanizer-zh.md
-├── scripts/                        ← Optional automation layer
-│   ├── run_skill.py                ← Main orchestrator (phase1 / phase2 / monthly-recap)
-│   ├── fetcher.py                  ← URL fetching: web / YouTube / Twitter/X
-│   ├── llm.py                      ← Provider-agnostic LLM client
-│   └── snippets.py                 ← Snippet generation, dedup, update
-├── .github/workflows/              ← GitHub Actions (Layer 3)
-│   ├── generate.yml
-│   ├── on-generate-comment.yml
-│   └── generate-monthly-recap.yml
-├── .claude/commands/               ← Claude Code slash commands (Layer 1)
-│   ├── phase1.md
-│   ├── generate.md
-│   └── monthly-recap.md
-├── references/
-│   └── snippets/                   ← Accumulated source records (knowledge base)
-├── output/
-│   ├── analysis/
-│   ├── tutorials/
-│   ├── explainers/
-│   ├── science-pop/
-│   └── monthly-recap/
-├── examples/                       ← Sample outputs
-│   ├── example-snippet.md
-│   ├── example-outline.md
-│   └── example-article.md
-├── CLAUDE.md                       ← AI assistant project guide (auto-read by Claude Code)
+│       ├── styles/              ← Writing style guides
+│       └── templates/           ← One file per article type
+├── scripts/
+│   ├── run_skill.py             ← Orchestrator (phase1 / phase2 / monthly-recap)
+│   ├── fetcher.py               ← URL fetching: web / YouTube / Twitter/X
+│   ├── discover.py              ← Topic-based source auto-discovery
+│   ├── llm.py                   ← Provider-agnostic LLM client
+│   └── snippets.py              ← Snippet generation, dedup, update
+├── .github/workflows/           ← GitHub Actions (Layer 3)
+├── .claude/commands/            ← Claude Code slash commands (Layer 1)
+├── references/snippets/         ← Knowledge base
+├── output/                      ← Generated articles
+├── examples/                    ← Sample outputs
+├── CLAUDE.md                    ← AI assistant project guide
 ├── .env.example
 └── requirements.txt
 ```
