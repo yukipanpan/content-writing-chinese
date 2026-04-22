@@ -1,0 +1,107 @@
+name: Generate Content (Phase 2 — Article)
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  phase2:
+    # Only run when:
+    # 1. Comment is on a pull request (not a plain issue)
+    # 2. Comment body is exactly "/generate" (with optional whitespace)
+    # 3. PR has the "awaiting-review" label
+    if: |
+      github.event.issue.pull_request != null &&
+      contains(github.event.comment.body, '/generate')
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Get PR details
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              pull_number: context.issue.number,
+            });
+            core.setOutput("branch",   pr.data.head.ref);
+            core.setOutput("pr_body",  pr.data.body);
+            core.setOutput("pr_title", pr.data.title);
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.branch }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Write PR body to file
+        run: |
+          cat > pr_body.md << 'PR_BODY_DELIMITER'
+          ${{ steps.pr.outputs.pr_body }}
+          PR_BODY_DELIMITER
+
+      - name: Generate Chinese article from approved outline
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python3 scripts/run_skill.py phase2 \
+            --pr-body-file pr_body.md
+
+      - name: Commit article to PR branch
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "phase2: add generated article"
+          file_pattern: "output/**/*.md"
+
+      - name: React to comment and post status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Thumbs up on the /generate comment
+            await github.rest.reactions.createForIssueComment({
+              owner:      context.repo.owner,
+              repo:       context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content:    "+1",
+            });
+
+            // Post a follow-up comment with next steps
+            await github.rest.issues.createComment({
+              owner:        context.repo.owner,
+              repo:         context.repo.repo,
+              issue_number: context.issue.number,
+              body: [
+                "✅ **Article generated** and committed to this branch.",
+                "",
+                "Find it in `output/` — review the file, then merge when ready.",
+                "",
+                "> The article is in Chinese. Use browser translation for a quick read.",
+              ].join("\n"),
+            });
+
+            // Update PR label
+            await github.rest.issues.removeLabel({
+              owner:        context.repo.owner,
+              repo:         context.repo.repo,
+              issue_number: context.issue.number,
+              name:         "awaiting-review",
+            }).catch(() => {});  // ignore if label not present
+
+            await github.rest.issues.addLabels({
+              owner:        context.repo.owner,
+              repo:         context.repo.repo,
+              issue_number: context.issue.number,
+              labels:       ["article-ready"],
+            });

@@ -1,0 +1,89 @@
+name: Generate Content (Phase 1 — Outline)
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_urls:
+        description: >
+          Source URLs — one per line or comma-separated.
+          Accepts: blog posts, docs.polkadot.com, wiki.polkadot.network,
+          YouTube links (transcript extracted), Twitter/X threads (via ADHX API).
+        required: true
+      intent:
+        description: >
+          What do you want to write? Describe freely in English.
+          Examples:
+            "a tutorial on XCM for Ethereum developers"
+            "analytical piece on the JAM timeline and what it means for builders"
+            "explain the new staking changes to a non-technical audience"
+            "summarise this YouTube talk for a Chinese Web3 audience"
+        required: true
+      generate_snippets:
+        description: >
+          Save source URLs as snippets in the knowledge base?
+          Recommended: yes. Snippets accumulate over time and improve future articles.
+          Duplicate topics are automatically merged into existing snippets.
+        required: true
+        type: choice
+        default: "yes"
+        options:
+          - "yes"
+          - "no"
+
+jobs:
+  phase1:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Fetch sources, generate snippets, build outline
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          SNIPPET_FLAG=""
+          if [ "${{ inputs.generate_snippets }}" = "yes" ]; then
+            SNIPPET_FLAG="--generate-snippets"
+          fi
+
+          python3 scripts/run_skill.py phase1 \
+            --urls "${{ inputs.source_urls }}" \
+            --intent "${{ inputs.intent }}" \
+            $SNIPPET_FLAG \
+            --pr-body-file pr_body.md
+
+      - name: Commit any new or updated snippets
+        if: inputs.generate_snippets == 'yes'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "snippets: auto-update from phase1 run"
+          file_pattern: "references/snippets/*.md"
+
+      - name: Read PR body
+        id: pr_body
+        run: |
+          {
+            echo "content<<PR_BODY_EOF"
+            cat pr_body.md
+            echo "PR_BODY_EOF"
+          } >> $GITHUB_OUTPUT
+
+      - name: Open PR with outline for review
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: "content: ${{ inputs.intent }}"
+          body: ${{ steps.pr_body.outputs.content }}
+          branch: "content/auto-${{ github.run_id }}"
+          commit-message: "phase1: outline ready for review"
+          delete-branch: false
+          labels: "awaiting-review"
