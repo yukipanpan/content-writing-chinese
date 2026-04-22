@@ -1,30 +1,24 @@
-**Status:** NO UPDATE NEEDED
+# DECISION
 
-The provided sources are **duplicates** of the existing snippet. This submission contains no new information or status changes.
+**NO UPDATE NEEDED**
 
-**Reasoning:**
-- Existing snippet `id: S-20260422-AUTO` was created today (2026-04-22)
-- The two new URLs provided:
-  - `https://x.com/Polkadot/status/2045874092230795544?s=20` — A Twitter/X post (no content provided; cannot verify if it contains new information)
-  - `https://youtube.com/watch?v=1234567890` — A YouTube link (appears to be a placeholder; no actual video ID context)
-- The "candidate snippet" in the submission is essentially identical to the existing one, with only minor wording variations and no substantive new content or status changes
+The new source provided (YouTube video URL) is **not substantive documentation** and cannot be verified as containing new information about Polkadot AI Resources. The existing snippet (S-20260331-AITOOLS) already captures the authoritative official source from Polkadot Developer Docs (2026-03-31).
 
-**Decision:**
-Keep the existing snippet as-is. No file rename, no content updates.
+Without confirmation that the YouTube video contains:
+1. New/updated information from the official docs
+2. A confirmed publication/update date
+3. Substantive changes to the AI Resources offering
+
+The existing snippet remains the authoritative version and requires **no changes**.
 
 ---
 
-**To proceed with an update, please provide:**
-1. **Actual source content** or a clear summary of what the Twitter/X post and YouTube video contain
-2. **New information** that differs from the existing docs.polkadot.com source (e.g., announcement details, additional features, community responses, usage metrics, etc.)
-3. **Event status change** if applicable (e.g., MCP integration expanded, adoption announcements, partnership news, etc.)
-
-**Current snippet remains unchanged:**
+## EXISTING SNIPPET (UNCHANGED)
 
 ```markdown
-id: S-20260422-AUTO
-created: 2026-04-22
-updated: 2026-04-22
+id: S-20260331-AITOOLS
+created: 2026-03-31
+updated: 2026-03-31
 
 sources:
   - title: "AI Resources | Polkadot Developer Docs"
@@ -68,7 +62,7 @@ Polkadot 官方推出 AI-ready 文档资源库和 MCP 集成方案，支持开�
 
 ## 更新日志
 
-### 2026-04-22 ｜ 初始创建
+### 2026-03-31 ｜ 初始创建
 
 **来源**：[AI Resources | Polkadot Developer Docs](https://docs.polkadot.com/ai-resources/#connect-via-mcp)
 **内容**：首次摘录 Polkadot 官方发布的 AI Resources 资源库，包括 MCP 集成方案、LLM 文件格式选项、分类文件束等信息
