@@ -163,23 +163,23 @@ Or just describe what you want in natural language — the AI reads `CLAUDE.md` 
 
 ### Layer 2 — With automation scripts
 
-Install dependencies and configure your LLM provider:
+Install dependencies and point at your preferred model:
 
 ```bash
 pip install -r requirements.txt
 cp .env.example .env
-# Edit .env: set LLM_PROVIDER and your API key
+# Edit .env — see examples inside for OpenAI, Groq, Ollama, and more
 ```
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `LLM_PROVIDER` | `anthropic` | Choose: `anthropic` \| `openai` \| `ollama` |
-| `ANTHROPIC_API_KEY` | — | Required for Anthropic |
-| `ANTHROPIC_MODEL` | `claude-haiku-4-5-20251001` | Optional model override |
-| `OPENAI_API_KEY` | — | Required for OpenAI |
-| `OPENAI_MODEL` | `gpt-4o-mini` | Optional model override |
-| `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama endpoint |
-| `OLLAMA_MODEL` | `llama3` | Ollama model name |
+This system works with **any OpenAI-compatible endpoint** — OpenAI, Groq, Mistral, Together AI, Ollama, LM Studio, your company's internal gateway, or any other provider. Set three variables:
+
+| Variable | What it does |
+|----------|-------------|
+| `LLM_BASE_URL` | API endpoint (default: `https://api.openai.com/v1`) |
+| `LLM_MODEL` | Model name — provider-specific, your choice |
+| `LLM_API_KEY` | API key (use any string for keyless local endpoints) |
+
+No API key at all? Use Claude Code: set `LLM_PROVIDER=claude-code` and the local `claude` CLI handles everything.
 
 Run the pipeline:
 
@@ -201,7 +201,7 @@ python3 scripts/run_skill.py phase2 \
 python3 scripts/run_skill.py monthly-recap --month 2026-04
 ```
 
-Layer 2 enables: automatic YouTube transcript extraction, automatic Twitter/X fetching (ADHX API, no key needed), and snippet knowledge base management with deduplication.
+Layer 2 enables: automatic YouTube transcript extraction, automatic Twitter/X thread fetching (ADHX API, no key needed), and snippet knowledge base management with deduplication.
 
 ---
 

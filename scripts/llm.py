@@ -1,70 +1,74 @@
 """
-llm.py — Provider-agnostic LLM client.
+llm.py — Universal LLM client via the OpenAI-compatible API.
 
-Reads LLM_PROVIDER from environment (default: anthropic).
-Exposes a single function: chat(system, user, max_tokens) → str
+Works with any provider that speaks the OpenAI chat-completions format:
+OpenAI, Groq, Mistral, Together AI, Ollama, LM Studio, vLLM, company gateways, etc.
 
-Supported providers:
-  anthropic   — requires ANTHROPIC_API_KEY
-  openai      — requires OPENAI_API_KEY; set OPENAI_MODEL to override default
-  ollama      — requires OLLAMA_BASE_URL (default: http://localhost:11434);
-                set OLLAMA_MODEL to choose model
-  claude-code — uses the local `claude` CLI (Claude Code); no API key needed
+Configure with three environment variables:
+
+  LLM_BASE_URL   Base URL of the endpoint   (default: https://api.openai.com/v1)
+  LLM_MODEL      Model identifier            (default: gpt-4o-mini)
+  LLM_API_KEY    API key                     (falls back to OPENAI_API_KEY; use any
+                                              non-empty string for keyless endpoints)
+
+Examples
+--------
+  # OpenAI
+  LLM_BASE_URL=https://api.openai.com/v1
+  LLM_MODEL=gpt-4o-mini
+  LLM_API_KEY=sk-...
+
+  # Groq (fast inference, generous free tier)
+  LLM_BASE_URL=https://api.groq.com/openai/v1
+  LLM_MODEL=llama-3.1-8b-instant
+  LLM_API_KEY=gsk_...
+
+  # Ollama (local, no key needed)
+  LLM_BASE_URL=http://localhost:11434/v1
+  LLM_MODEL=llama3.2
+  LLM_API_KEY=ollama
+
+  # LM Studio (local)
+  LLM_BASE_URL=http://localhost:1234/v1
+  LLM_MODEL=local-model
+  LLM_API_KEY=lm-studio
+
+  # Any company / internal gateway
+  LLM_BASE_URL=http://your-llm-gateway/v1
+  LLM_MODEL=your-model-name
+  LLM_API_KEY=your-internal-key
+
+Special case — Claude Code (uses the local `claude` CLI, no API key needed):
+  LLM_PROVIDER=claude-code
 """
 
 import os
 import sys
 
-PROVIDER = os.environ.get("LLM_PROVIDER", "anthropic").lower()
+_PROVIDER = os.environ.get("LLM_PROVIDER", "").lower()
 
 
 def chat(system: str, user: str, max_tokens: int = 2048) -> str:
-    if PROVIDER == "anthropic":
-        return _chat_anthropic(system, user, max_tokens)
-    elif PROVIDER == "openai":
-        return _chat_openai(system, user, max_tokens)
-    elif PROVIDER == "ollama":
-        return _chat_ollama(system, user, max_tokens)
-    elif PROVIDER == "claude-code":
+    if _PROVIDER == "claude-code":
         return _chat_claude_code(system, user)
-    else:
-        sys.exit(f"Unknown LLM_PROVIDER: {PROVIDER!r}. Choose: anthropic, openai, ollama, claude-code")
+    return _chat_openai_compat(system, user, max_tokens)
 
 
-# ── Anthropic ─────────────────────────────────────────────────────────────────
-
-def _chat_anthropic(system: str, user: str, max_tokens: int) -> str:
-    import anthropic
-
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        sys.exit("ANTHROPIC_API_KEY is not set")
-
-    model = os.environ.get("ANTHROPIC_MODEL") or "claude-haiku-4-5-20251001"
-    client = anthropic.Anthropic(api_key=api_key)
-    resp = client.messages.create(
-        model=model,
-        max_tokens=max_tokens,
-        system=system,
-        messages=[{"role": "user", "content": user}],
-    )
-    return resp.content[0].text.strip()
-
-
-# ── OpenAI ────────────────────────────────────────────────────────────────────
-
-def _chat_openai(system: str, user: str, max_tokens: int) -> str:
+def _chat_openai_compat(system: str, user: str, max_tokens: int) -> str:
     try:
         from openai import OpenAI
     except ImportError:
-        sys.exit("openai package is not installed. Run: pip install openai")
+        sys.exit("openai package not installed. Run: pip install openai")
 
-    api_key = os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        sys.exit("OPENAI_API_KEY is not set")
+    base_url = os.environ.get("LLM_BASE_URL", "https://api.openai.com/v1")
+    model    = os.environ.get("LLM_MODEL") or "gpt-4o-mini"
+    api_key  = (
+        os.environ.get("LLM_API_KEY")
+        or os.environ.get("OPENAI_API_KEY")
+        or "no-key"  # local endpoints often don't require a key
+    )
 
-    model = os.environ.get("OPENAI_MODEL") or "gpt-4o-mini"
-    client = OpenAI(api_key=api_key)
+    client = OpenAI(base_url=base_url, api_key=api_key)
     resp = client.chat.completions.create(
         model=model,
         max_tokens=max_tokens,
@@ -76,61 +80,26 @@ def _chat_openai(system: str, user: str, max_tokens: int) -> str:
     return resp.choices[0].message.content.strip()
 
 
-# ── Ollama ────────────────────────────────────────────────────────────────────
-
-def _chat_ollama(system: str, user: str, max_tokens: int) -> str:
-    try:
-        import requests
-    except ImportError:
-        sys.exit("requests package is not installed. Run: pip install requests")
-
-    base_url = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
-    model    = os.environ.get("OLLAMA_MODEL", "llama3")
-
-    payload = {
-        "model":  model,
-        "stream": False,
-        "options": {"num_predict": max_tokens},
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user",   "content": user},
-        ],
-    }
-    resp = requests.post(f"{base_url}/api/chat", json=payload, timeout=120)
-    resp.raise_for_status()
-    return resp.json()["message"]["content"].strip()
-
-
-# ── Claude Code CLI ───────────────────────────────────────────────────────────
-
 def _chat_claude_code(system: str, user: str) -> str:
     """
     Shell out to the local `claude` CLI (Claude Code).
     No API key required — uses the Claude Code session credentials.
-
-    Passes the prompt via stdin to avoid OS argument-length limits
-    (prompts with full templates can exceed 256 KB).
     """
     import shutil
     import subprocess
+    import re as _re
 
     if not shutil.which("claude"):
         sys.exit(
             "claude CLI not found. Install Claude Code: https://claude.ai/code\n"
-            "Or switch to another provider: LLM_PROVIDER=anthropic"
+            "Or set LLM_BASE_URL + LLM_MODEL for any OpenAI-compatible endpoint."
         )
 
-    # Claude Code CLI tends to wrap output with permission prompts and
-    # meta-commentary when the prompt mentions files or saving.
-    # Constraint: force output to start with the content itself (# title),
-    # then extract only that portion from the response.
     constraint = (
         "CRITICAL OUTPUT FORMAT: Your response MUST start immediately with the "
-        "content itself — no preamble, no explanation, no permission requests, "
-        "no file-path mentions. If writing a Chinese article, begin with the "
-        "markdown title line (e.g. `# 标题`). Nothing before it. Nothing after "
-        "the last line of the content. Treat any instruction about 'saving files' "
-        "as already handled externally — just output the text.\n\n"
+        "content itself — no preamble, no explanation, no permission requests. "
+        "If writing a Chinese article, begin with the markdown title line (e.g. `# 标题`). "
+        "Nothing before it. Nothing after the last line of the content.\n\n"
     )
     prompt = f"{constraint}{system}\n\n---\n\n{user}"
     result = subprocess.run(
@@ -145,15 +114,12 @@ def _chat_claude_code(system: str, user: str) -> str:
 
     output = result.stdout.strip()
 
-    # If Claude Code still added a preamble, extract from the first markdown
-    # heading or the first line that starts with non-meta content.
-    import re as _re
+    # Extract from first markdown heading if Claude added a preamble
     heading_match = _re.search(r"^(#+ .+)$", output, _re.MULTILINE)
     if heading_match:
         output = output[heading_match.start():].strip()
 
-    # Strip trailing meta-commentary: lines after the last blank line that
-    # look like Claude Code status messages (Chinese permission prompts, etc.)
+    # Strip trailing meta-commentary lines
     lines = output.split("\n")
     for i in range(len(lines) - 1, -1, -1):
         line = lines[i].strip()

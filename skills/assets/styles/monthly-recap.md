@@ -1,111 +1,121 @@
-# Monthly Recap 写作风格
+# Monthly Recap Writing Style
 
-继承自 `_base.md`，适用于月度回顾类文章。
+Inherits from `_base.md`. Applies to monthly review articles.
 
 ---
 
-## 一、标题风格
+## I. Title Style
 
-### 结构
-`从[X]到[Y]：Polkadot [月份] 的[核心判断]`
+### Structure
+`从[X]到[Y]：Polkadot [Month]的[Core Judgment]`
 
-或简化为：
-`Polkadot [月份]：[核心判断/动作]`
+Or simplified as:
+`Polkadot [Month]：[Core Judgment / Action]`
 
-### 示例
+### Examples
 - ✅ `从经济模型到执行层：Polkadot 按下"重构键"`
 - ✅ `从扩张到选择：Polkadot 1 月的减法逻辑`
 - ❌ `Polkadot 1 月进展汇总`
 
+(Title examples kept in Chinese — they demonstrate the target output format.)
+
 ---
 
-## 二、引言风格
+## II. Introduction Style
 
-### 模式
+### Pattern
 ```
-[时间段]，对 [主体] 来说并不是一次"[常规描述]"，[核心判断]在这个月集中释放：
-[用分号/顿号串联 3-5 个并列的变化维度]。
+[Time period], for [subject] this was not a "[routine description]" — [core judgment] concentrated in this month:
+[chain 3–5 parallel dimensions of change with semicolons / enumeration marks].
 
-[一句批判性/反思性的判断]。
+[One critical or reflective judgment sentence].
 ```
 
-### 示例
+### Example
 > 2026 年 1 月，对 Polkadot 来说并不是一次"功能更新月"，系统性重构在这个月集中释放：
 > 经济模型停止燃烧、治理工具开始收紧，执行层正式落地，Treasury 与 Bounty 机制进入自我纠偏阶段。
 >
 > 2026 年 1 月，Polkadot 做了一件很少有公链敢做的事：开始对自己说实话。
 
-### 避免
-- ❌ 直接列举事件开头
-- ❌ "本月有以下进展"式的流水账
-- ❌ 过于抽象没有信息量的开头
+(Example kept in Chinese — it demonstrates the target output style.)
+
+### Avoid
+- ❌ Opening by listing events directly
+- ❌ "This month saw the following developments" — dry chronological list
+- ❌ Opening that is too abstract and contains no real information
 
 ---
 
-## 三、小标题风格
+## III. Section Heading Style
 
-### 原则
-- **10 字以内**
-- **动词或动态描述**
-- **带判断或视角**
+### Principles
+- **10 characters or fewer** (in Chinese)
+- **Verb or dynamic description**
+- **Carries a judgment or perspective**
 
-### 示例对比
-| 事件 | ❌ 避免 | ✅ 偏好 |
+### Comparison Examples
+| Event | ❌ Avoid | ✅ Prefer |
 |------|--------|--------|
-| Revive 上线 | Revive 正式发布 | 执行层终于落地 |
-| ink! 停止 | ink! 停止开发 | Rust 合约路径终结 |
-| Treasury 盈利 | Q4 财报发布 | 国库首次说实话 |
-| Bounty 关闭 | 三个 Bounty 关闭 | 治理开始做减法 |
-| DAP 启动 | DAP Phase 1 通过 | 质押体验即将重构 |
-| Mimir 关停 | Mimir 进入日落 | 多签老将黯然退场 |
+| Revive launched | Revive 正式发布 | 执行层终于落地 |
+| ink! stopped | ink! 停止开发 | Rust 合约路径终结 |
+| Treasury profit | Q4 财报发布 | 国库首次说实话 |
+| Bounty closed | 三个 Bounty 关闭 | 治理开始做减法 |
+| DAP started | DAP Phase 1 通过 | 质押体验即将重构 |
+| Mimir shut down | Mimir 进入日落 | 多签老将黯然退场 |
+
+(Heading examples kept in Chinese — they demonstrate the target output format.)
 
 ---
 
-## 四、段落风格
+## IV. Paragraph Style
 
-### 要求
-- ≤300 字
-- 融入批判性视角（如适用）
-- 可提出问题或反思
+### Requirements
+- ≤300 characters (in Chinese)
+- Incorporate a critical perspective (where applicable)
+- May pose questions or reflections
 
-### 示例
+### Example
 > ink! Alliance 宣布停止 Rust 智能合约框架开发。团队自去年 9 月起无偿工作近 5 个月，三次资金申请均被拒。
 > 这不是一个孤立事件——它揭示了一个更深层的问题：当公共产品无法证明其"外溢价值"时，谁来为它买单？
 > Polkadot 的答案似乎是：没有人。
 
+(Example kept in Chinese — it demonstrates the target output style.)
+
 ---
 
-## 五、结语风格
+## V. Closing Style
 
-### 模式
+### Pattern
 ```
-[总结本月核心趋势/判断]。
+[Summarise the month's core trend / judgment].
 
-[指出值得关注的信号或矛盾]。
+[Point to a signal or contradiction worth watching].
 
-如果说 [主体] 正在进入一个 [新阶段]，那它的关键词不是 [A]，而是 [B]。
+If [subject] is entering a [new phase], its keyword is not [A], but [B].
 ```
 
-### 示例
+### Example
 > 这不是一个轻松的阶段，但却是任何长期公链都绕不开的阶段。
 >
 > 如果说 Polkadot 正在进入一个新周期，那它的关键词不是扩张，而是选择。
 
-### 其他收尾句式
-- "这或许是 [判断]"
-- "[事件] 提醒我们：[洞察]"
-- "这不是 [表面]，而是 [本质]"
+(Example kept in Chinese — it demonstrates the target output style.)
+
+### Other Closing Sentence Patterns
+- "这或许是 [judgment]" (This may be [judgment])
+- "[Event] 提醒我们：[insight]" ([Event] reminds us: [insight])
+- "这不是 [surface appearance]，而是 [essence]" (This is not [surface], but [essence])
 
 ---
 
-## 六、章节排序
+## VI. Section Order
 
-按"影响力 + 话题性"排序：
+Order by "impact + newsworthiness":
 
-1. **本月核心叙事**（1-2 个最重要的变化）
-2. **执行层 / 技术突破**
-3. **协议升级 / 参数调整**
-4. **治理纠偏 / 财务变化**
-5. **生态项目动态**
-6. **值得关注的"减法"**（关停、被拒、终止）
-7. **社区 / 开发者 / 教育**
+1. **Core narrative of the month** (1–2 most important changes)
+2. **Execution layer / technical breakthroughs**
+3. **Protocol upgrades / parameter adjustments**
+4. **Governance corrections / financial changes**
+5. **Ecosystem project developments**
+6. **Notable "subtractions"** (shutdowns, rejections, terminations)
+7. **Community / developers / education**

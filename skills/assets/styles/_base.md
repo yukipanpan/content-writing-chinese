@@ -1,87 +1,89 @@
-# Yuki 基础写作风格
+# Yuki Base Writing Style
 
-所有文章类型的通用风格规范。特定类型文章可继承并扩展本规范。
-
----
-
-## 核心风格定位
-
-**冷静的批判性观察者** —— 不是新闻播报员，而是站在更高视角审视生态演进的分析者。
+General style guidelines that apply to all article types. Specific article types may inherit and extend these guidelines.
 
 ---
 
-## 一、整体语气
+## Core Style Positioning
 
-- **立场明确但不激进**：有观点，但基于事实
-- **冷静但不冷漠**：关心生态，但不吹捧
-- **专业但不晦涩**：技术准确，表达清晰
-- **批判但不消极**：指出问题，但相信演进
+**Calm, critical observer** — not a news broadcaster, but an analyst examining ecosystem evolution from a higher vantage point.
 
 ---
 
-## 二、段落节奏
+## I. Overall Tone
 
-### 句式偏好
-- **长句为主**，偶尔用短句清晰描述
-- **用破折号插入解释**：`——不是新闻播报员，而是分析者`
-- **用顿号/分号串联并列**：`经济模型停止燃烧、治理工具开始收紧，执行层正式落地`
+- **Clear stance, not aggressive**: has a point of view, but grounded in facts
+- **Calm, not indifferent**: cares about the ecosystem, but does not hype it
+- **Professional, not obscure**: technically accurate, clearly expressed
+- **Critical, not pessimistic**: points out problems, but believes in progress
 
-### 节奏示例
+---
+
+## II. Paragraph Rhythm
+
+### Sentence Preferences
+- **Long sentences as the primary form**, with occasional short sentences for crisp clarity
+- **Use em-dashes for inserted explanations**: `——not a news broadcaster, but an analyst`
+- **Use enumeration marks / semicolons to chain parallel items**: `economic model stops burning、governance tools tighten、execution layer officially launches`
+
+### Rhythm Examples
 > 这不是一个轻松的阶段，但却是任何长期公链都绕不开的阶段。
 > 如果说 Polkadot 正在进入一个新周期，那它的关键词不是扩张，而是选择。
 
----
-
-## 三、批判性视角
-
-### 核心原则
-**敢于说实话** —— 不回避负面信息，不粉饰问题。
-
-### 表达方式
-- 直接指出问题：`哪些机制不再有效`、`哪些激励正在被错误的人消耗`
-- 提出反思性问题：`是否真的有人会用？`
-- 承认不确定性：`这不是一个轻松的阶段`
-
-### 可用句式
-- "开始对自己说实话"
-- "哪些 X 不再有效，哪些 Y 没有外溢价值"
-- "非常有必要思考"
-- "绕不开的阶段"
-
-### 避免
-- ❌ 纯正面叙述，忽略问题
-- ❌ 为项目方辩护的口吻
-- ❌ "一切都在按计划进行"式的官方腔
+(These are example sentences demonstrating the target output style — keep them in Chinese.)
 
 ---
 
-## 四、用词偏好
+## III. Critical Perspective
 
-### 倾向使用
-| 场景 | 偏好用词 |
+### Core Principle
+**Dare to tell the truth** — do not avoid negative information, do not paper over problems.
+
+### Expression Methods
+- Point out problems directly: `which mechanisms are no longer effective`, `which incentives are being consumed by the wrong parties`
+- Raise reflective questions: `Does anyone actually use this?`
+- Acknowledge uncertainty: `This is not an easy phase`
+
+### Useful Sentence Patterns
+- "starting to tell itself the truth"
+- "which X are no longer effective, which Y have no spillover value"
+- "it is very necessary to think about"
+- "a phase that cannot be avoided"
+
+### Avoid
+- ❌ Pure positive narrative that ignores problems
+- ❌ Tone that defends the project team
+- ❌ Official-sounding lines like "everything is going according to plan"
+
+---
+
+## IV. Vocabulary Preferences
+
+### Preferred Usage
+| Context | Preferred Words |
 |------|----------|
-| 重大变化 | 重构、转向、纠偏、收紧 |
-| 负面情况 | 不再有效、被消耗、绕不开 |
-| 判断性 | 有必要思考、说实话、真正的问题 |
-| 时间感 | 集中释放、进入阶段、新周期 |
+| Major changes | 重构、转向、纠偏、收紧 (restructure, pivot, correction, tighten) |
+| Negative situations | 不再有效、被消耗、绕不开 (no longer effective, being consumed, unavoidable) |
+| Judgments | 有必要思考、说实话、真正的问题 (necessary to think, tell the truth, the real issue) |
+| Sense of time | 集中释放、进入阶段、新周期 (concentrated release, entering a phase, new cycle) |
 
-### 避免使用
-| 避免 | 替代 |
+### Avoid
+| Avoid | Use Instead |
 |------|------|
-| 重磅、史诗级 | 关键、核心 |
-| 完美、顺利 | 落地、推进 |
-| 我们 | Polkadot / 社区 / 生态 |
-| 大家 | 开发者 / 持币者 / 参与者 |
+| 重磅、史诗级 (bombshell, epic) | 关键、核心 (key, core) |
+| 完美、顺利 (perfect, smooth) | 落地、推进 (land, advance) |
+| 我们 (we / us) | Polkadot / 社区 / 生态 (community / ecosystem) |
+| 大家 (everyone) | 开发者 / 持币者 / 参与者 (developers / token holders / participants) |
 
 ---
 
-## 五、标题通用规范
+## V. General Title Guidelines
 
-### 避免
-- ❌ 纯列举式标题（"1月更新：A、B、C"）
-- ❌ 过于中性的描述（"Polkadot 1月动态"）
-- ❌ 营销腔（"重磅！史诗级更新！"）
+### Avoid
+- ❌ Pure enumeration titles ("January Updates: A, B, C")
+- ❌ Overly neutral descriptions ("Polkadot January Developments")
+- ❌ Marketing language ("BOMBSHELL! EPIC update!")
 
-### 偏好
-- **动词驱动**：用"按下"、"启动"、"重构"等动态词
-- **带判断**：不是陈述事实，而是给出视角
+### Prefer
+- **Verb-driven**: use dynamic words like "按下" (press), "启动" (launch), "重构" (restructure)
+- **Carries a judgment**: not stating facts, but offering a perspective

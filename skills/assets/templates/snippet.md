@@ -1,92 +1,92 @@
-# 摘要片段模板 (Snippet Template)
-Name: 信息摘录模版
-Description: 将看到的信息整理为系统化的片段，支持多次更新并保留更新记录
+# Snippet Template
+Name: Information Capture Template
+Description: Organises captured information into systematic snippets, supports multiple updates while retaining an update log
 
-## 命名规则
+## Naming Rules
 
-文件名格式：`YYYYMMDD-关键词[-结果状态].md`
+Filename format: `YYYYMMDD-keyword[-outcome-status].md`
 
-### 日期部分
+### Date Part
 
-**基本规则**：YYYYMMDD = sources 列表中最新一条来源的日期
+**Basic rule**: YYYYMMDD = the date of the most recent source in the `sources` list
 
-**事件变动回退规则**：当事件发生了状态变动（如提案执行、通过、拒绝、项目上线等），但最新来源链接的日期并未更新时，将文件名日期设为**实际发生变动的时间**，而非来源日期。
+**Event-change rollback rule**: When an event changes state (e.g. a proposal executes, passes, is rejected, or a project goes live), but the most recent source link's date has not been updated, set the filename date to the **actual date the state change occurred**, not the source date.
 
-判断方式：
-- 如果有新来源且其日期更新 → 文件名日期 = 新来源日期（基本规则）
-- 如果没有新来源，但事件状态发生了变动（可从链上数据、投票结果等观察到） → 文件名日期 = 变动实际发生的日期
-- 在更新日志中需注明"链上观察到执行/通过/拒绝于 YYYY-MM-DD，无独立来源"
+Decision logic:
+- If there is a new source with an updated date → filename date = new source date (basic rule)
+- If there is no new source, but the event state changed (observable from on-chain data, vote results, etc.) → filename date = actual date the change occurred
+- Note in the update log: "on-chain observation: executed/passed/rejected on YYYY-MM-DD, no independent source"
 
-典型场景：
-- 提案在 2/4 提交（来源日期 2/4），2/8 链上执行但无新文章 → 文件名日期改为 20260208
-- 提案在 2/16 提交（来源日期 2/16），3/1 投票结果出来但无独立公告 → 文件名日期改为 20260301
-- Runtime 升级在 2/4 提交，2/19 观察到恢复但只有链上记录 → 文件名日期改为 20260219
+Typical scenarios:
+- Proposal submitted 2/4 (source date 2/4), executed on-chain 2/8 but no new article → rename filename date to 20260208
+- Proposal submitted 2/16 (source date 2/16), vote result on 3/1 but no independent announcement → rename filename date to 20260301
+- Runtime upgrade submitted 2/4, recovery observed 2/19 with only on-chain record → rename filename date to 20260219
 
-### 关键词部分
+### Keyword Part
 
-- 简洁描述事件核心内容，创建后一般不变
+- Concise description of the event's core content; generally unchanged after creation
 
-### 结果状态部分（可选）
+### Outcome Status Part (optional)
 
-- 当事件的结果/状态发生变化时，在关键词后追加状态后缀
-- 常用状态后缀：
-  - 治理类：`-已通过` / `-已拒绝` / `-已执行` / `-已超时` / `-审议中`
-  - 项目类：`-已上线` / `-已停止` / `-Beta` / `-已恢复`
-  - 事故类：`-已修复` / `-进行中`
-- 首次创建时如果结果已明确，直接带上状态后缀
-- 如果事件仍在进行中且结果未定，可不加后缀
+- When an event's outcome / state changes, append a status suffix after the keyword
+- Common status suffixes:
+  - Governance: `-已通过` / `-已拒绝` / `-已执行` / `-已超时` / `-审议中`
+  - Project: `-已上线` / `-已停止` / `-Beta` / `-已恢复`
+  - Incident: `-已修复` / `-进行中`
+- If the outcome is already clear at first creation, include the status suffix immediately
+- If the event is still in progress and outcome is unknown, the suffix may be omitted
 
-### 示例演变
+### Evolution Examples
 
 ```
-# ink! Alliance 停止开发
-首次创建（基于 Twitter 1/28）：
+# ink! Alliance stops development
+First creation (based on Twitter 1/28):
   20260128-ink-Alliance停止开发.md
 
-补充 Forum 原帖（Forum 日期 1/27，但 Twitter 1/28 更新）：
-  → 文件名不变（最新来源日期仍为 1/28）
-  → 内容更新，更新日志追加
+Add Forum original post (Forum date 1/27, but Twitter 1/28 is newer):
+  → Filename unchanged (latest source date is still 1/28)
+  → Content updated, update log appended
 
-假设未来社区接手（新来源日期 3/15）：
-  → 20260315-ink-Alliance停止后社区接手.md（日期变 + 关键词变 + 状态变）
+If community takes over in the future (new source date 3/15):
+  → 20260315-ink-Alliance停止后社区接手.md (date + keyword + status all change)
 
-# Bloque Stage 3 提案
-首次创建（提案中，来源日期 2/13）：
+# Bloque Stage 3 Proposal
+First creation (proposal in progress, source date 2/13):
   20260213-Bloque-Stage3-Card扩展.md
 
-提案通过（新来源 3/1）：
+Proposal passes (new source 3/1):
   → 20260301-Bloque-Stage3-Card扩展-已通过.md
 
-# Hyperbridge 事故
-首次创建（事故公告 2/15）：
+# Hyperbridge Incident
+First creation (incident announcement 2/15):
   20260215-Runtime-v207-Hyperbridge中断.md
 
-恢复公告（2/19）：
+Recovery announcement (2/19):
   → 20260219-Runtime-v207-Hyperbridge中断-已恢复.md
 
-# Runtime 升级（事件变动回退规则示例）
-首次创建（来源日期 2/4，提案刚提交）：
+# Runtime Upgrade (event-change rollback rule example)
+First creation (source date 2/4, proposal just submitted):
   20260204-Runtime-v206升级.md
 
-链上观察到 2/8 已执行，但无新文章/公告：
+On-chain execution observed on 2/8, but no new article / announcement:
   → 20260208-Runtime-v206升级-已执行.md
-  → 日期从 0204 → 0208（取实际执行日期，非来源日期）
-  → 更新日志注明"链上观察到执行于 2026-02-08，无独立来源"
+  → Date changes from 0204 → 0208 (use actual execution date, not source date)
+  → Update log notes "on-chain observation: executed on 2026-02-08, no independent source"
 
-# Collator Bounty 提案（事件变动回退规则示例）
-首次创建（来源日期 1/22，提案中）：
+# Collator Bounty Proposal (event-change rollback rule example)
+First creation (source date 1/22, proposal in progress):
   20260122-System-Collator-Bounty-Topup.md
 
-观察到 2/19 投票结束被拒，但无新文章：
+Vote ends with rejection observed on 2/19, but no new article:
   → 20260219-System-Collator-Bounty-Topup-已拒绝.md
-  → 日期从 0122 → 0219（取实际结果确定日期）
+  → Date changes from 0122 → 0219 (use the date when the actual result was confirmed)
 ```
 
-## ID 规则
+## ID Rules
 
-- `id` 使用首次创建日期，格式 `S-YYYYMMDD-XXXX`，创建后不再变更
-- `id` 是 snippet 的唯一稳定标识符，用于跨 snippet 引用
-- 文件名会随更新变化，但 `id` 不变
+- `id` uses the first creation date, format `S-YYYYMMDD-XXXX`, never changes after creation
+- `id` is the snippet's unique stable identifier, used for cross-snippet references
+- The filename may change on updates, but the `id` does not
 
 ---
 id: S-YYYYMMDD-XXXX
@@ -98,127 +98,127 @@ sources:
     url: ""
     author: ""
     date: ""
-    note: "初始来源"
+    note: "Initial source"
   - title: ""
     url: ""
     author: ""
     date: ""
-    note: "补充来源（描述新增了什么信息）"
+    note: "Supplementary source (describe what new information it adds)"
 
 topic:
   - MonthlyRecap | RecentDevelopments | PolkadotHub
 
 tags:
-  - 技术
-  - 生态
-  - 治理
-  - 性能
-  - 资金
-  - 采用率
-  - 开发者
-  - 市场
+  - technical
+  - ecosystem
+  - governance
+  - performance
+  - funding
+  - adoption
+  - developer
+  - market
 
 ---
 
-## 标题
+## Title
 
-> 来源：[来源名称](URL) | 最后更新：YYYY-MM-DD（最新来源日期）
+> Source: [Source Name](URL) | Last updated: YYYY-MM-DD (date of most recent source)
 
-## 核心要点
+## Key Points (核心要点)
 
-（始终反映最新状态，每次更新时同步修改）
+(Always reflects the latest state; update in sync each time)
 
 -
 -
 -
 
-## 一句话总结
+## Summary (一句话总结)
 
-（50字以内概括当前最新状态，每次更新时同步修改）
+(Under 50 characters — concise summary of the current latest state; update in sync each time)
 
-## 关键引用
+## Key Quote (关键引用)
 
-> "原文引用片段" —— 来源, 日期
+> "Original quoted passage" —— Source, Date
 
-## 更新日志
+## Update Log (更新日志)
 
-<!-- 倒序排列，最新的在最上面 -->
+<!-- Reverse chronological order — newest entry at the top -->
 
-### YYYY-MM-DD ｜ 更新标题（简述变化）
+### YYYY-MM-DD ｜ Update title (brief description of change)
 
-**来源**：[来源名称](URL)
-**变化**：
-- 新增/修改了什么内容
-- 对核心要点的影响
-- 结果/状态是否变化（如有变化需同步修改文件名）
+**Source**: [Source Name](URL)
+**Changes**:
+- What was added / modified
+- Impact on Key Points
+- Whether the outcome / state changed (if so, update the filename too)
 
 ---
 
-### YYYY-MM-DD ｜ 初始创建
+### YYYY-MM-DD ｜ Initial creation
 
-**来源**：[来源名称](URL)
-**内容**：首次摘录，包含……
+**Source**: [Source Name](URL)
+**Content**: First capture, includes……
 
-## 适用场景
+## Use Cases (适用场景)
 
-（这条信息可用于支持什么观点/章节）
+(What arguments / sections can this information be used to support)
 
-## 段落总结（400字以内）
+## Overview (段落总结) (under 400 characters)
 
-（一段式总结，始终反映最新状态。每次更新时重写，而不是追加。最后一句需引发读者继续阅读全文的兴趣）
+(Single-paragraph summary, always reflects the latest state. Rewrite on each update — do not append. The final sentence should prompt the reader's interest in reading the full article.)
 
-阅读全文：[文章标题](原文URL)
+Read full article: [Article Title](original URL)
 
-## 关联内容
+## Related (关联内容)
 
-- 相关 snippet ID（使用 S-YYYYMMDD-XXXX 格式引用，不要用文件名）
+- Related snippet IDs (use S-YYYYMMDD-XXXX format, not filenames)
 
-## 模板使用指南
+## Template Usage Guide
 
-### 创建 snippet 时
-1. `id` 使用当天日期（S-YYYYMMDD-XXXX）
-2. `created` 使用当天日期
-3. `updated` 与 `created` 相同
-4. **文件名日期 = 来源的日期**（不是创建 snippet 的日期）
-5. 文件名关键词后视情况加结果状态后缀
-6. `sources` 列表只有一条
-7. 「更新日志」只有一条"初始创建"记录
+### When creating a snippet
+1. `id` uses today's date (S-YYYYMMDD-XXXX)
+2. `created` uses today's date
+3. `updated` is the same as `created`
+4. **Filename date = the source's date** (not the date the snippet was created)
+5. Append an outcome status suffix to the filename keyword if applicable
+6. `sources` list has only one entry
+7. The Update Log has only one "Initial creation" entry
 
-### 更新 snippet 时
-1. `id` 和 `created` 不变
-2. `updated` 改为当天日期
-3. 在 `sources` 列表追加新来源
-4. **重命名文件**：
-   - 日期前缀 = sources 列表中最新一条来源的 date
-   - **事件变动回退**：如果事件状态变了但无新来源，日期 = 变动实际发生日期
-   - 如果结果/状态变化 → 更新文件名中的状态后缀
-   - 如果事件性质根本改变 → 更新文件名中的关键词
-5. 在「更新日志」顶部追加新条目（倒序）
-6. **重写**「核心要点」「一句话总结」「段落总结」以反映最新状态
-7. 「关键引用」可追加，保留有价值的旧引用
-8. 标题行的"最后更新"日期 = 最新来源日期
+### When updating a snippet
+1. `id` and `created` do not change
+2. `updated` changes to today's date
+3. Append the new source to the `sources` list
+4. **Rename the file**:
+   - Date prefix = the `date` of the most recent entry in the `sources` list
+   - **Event-change rollback**: if the event state changed but there is no new source, date = actual date the change occurred
+   - If the outcome / state changed → update the status suffix in the filename
+   - If the fundamental nature of the event changed → update the keyword in the filename
+5. Prepend a new entry to the Update Log (reverse chronological)
+6. **Rewrite** Key Points, Summary, and Overview to reflect the latest state
+7. Key Quote may be appended; retain valuable older quotes
+8. The "Last updated" date in the title line = most recent source date
 
-### 需要同步更新的字段（每次更新必改）
-- `updated`（改为当天日期）
-- 文件名（日期 = 最新来源日期；状态后缀按需更新）
-- 标题行的"最后更新"日期
-- 核心要点
-- 一句话总结
-- 段落总结
+### Fields that must be updated on every update
+- `updated` (change to today's date)
+- Filename (date = most recent source date; status suffix updated as needed)
+- "Last updated" date in the title line
+- Key Points
+- Summary
+- Overview
 
-### 不变的字段
+### Fields that never change
 - `id`
 - `created`
-- 已有的 `sources` 条目（只追加，不删改）
-- 已有的「更新日志」条目（只追加，不删改）
+- Existing `sources` entries (append only, never delete or modify)
+- Existing Update Log entries (append only, never delete or modify)
 
-### 日期字段速查
+### Date Field Quick Reference
 
-| 字段 | 含义 | 何时变化 |
+| Field | Meaning | When it changes |
 |------|------|----------|
-| `id` 中的日期 | snippet 首次创建日 | 永不变 |
-| `created` | snippet 首次创建日 | 永不变 |
-| `updated` | snippet 最近一次编辑日 | 每次编辑时更新为当天 |
-| 文件名日期 | 事件最近一次有新进展的日期 | 新来源日期更新时变；或无新来源但事件状态变动时，取变动日期 |
-| 标题行"最后更新" | 与文件名日期一致 | 与文件名日期同步 |
-| `sources[].date` | 每条来源的原始日期 | 永不变（只追加新来源） |
+| Date in `id` | Date snippet was first created | Never |
+| `created` | Date snippet was first created | Never |
+| `updated` | Date snippet was most recently edited | Update to today on every edit |
+| Filename date | Date of the most recent development in the event | Changes when a new source date appears; or when no new source but event state changes, use the change date |
+| "Last updated" in title line | Matches the filename date | Stays in sync with filename date |
+| `sources[].date` | Original date of each source | Never (only append new sources) |

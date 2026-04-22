@@ -1,231 +1,231 @@
-# Polkadot Docs → 中文 CSDN 文章生成模板
+# Polkadot Docs → Chinese CSDN Article Template
 
-## 使用方式
+## How to Use
 
-将以下指令交给 Claude，把 `$URL` 替换为目标页面链接后执行：
+Hand the following instruction to Claude, replacing `$URL` with the target page link before executing:
 
-> 请按照 `templates/polkadot-docs-to-csdn.md` 的规则处理这个页面：`$URL`
+> Please process this page according to the rules in `templates/polkadot-docs-to-csdn.md`: `$URL`
 
-**URL 限制**：必须来自 `https://docs.polkadot.com/` 域名下的任意页面。
-
----
-
-## 执行步骤
-
-### Step 1：读取原文
-
-使用 WebFetch 工具抓取 `$URL` 页面的完整内容，包括：
-
-- 所有正文段落与章节结构
-- 所有代码块（完整保留，不得截断）
-- 所有表格、Mermaid 图、示意图及图注
-- 页面标题和章节标题
-
-若页面含有「下一页」或分页链接，询问用户是否需要连续处理后续页面。
+**URL restriction**: must come from any page under the `https://docs.polkadot.com/` domain.
 
 ---
 
-### Step 2：完整中文翻译
+## Execution Steps
 
-将原文全部翻译成中文，遵守以下规则。
+### Step 1: Read the source
 
-#### 通用规则
+Use the WebFetch tool to retrieve the full content of the `$URL` page, including:
 
-- 专业术语译法以下方「术语对照表」为准
-- 语句须通顺，符合中文语法与阅读习惯，避免直译造成的生硬感
-- 所有章节标题、小标题均翻译为中文
+- All body paragraphs and section structure
+- All code blocks (preserve in full — must not be truncated)
+- All tables, Mermaid diagrams, illustrations, and captions
+- Page title and section headings
 
-#### 专业术语解释规则
+If the page contains "Next page" or pagination links, ask the user whether to process subsequent pages in sequence.
 
-目标读者为**刚进入 Web3 的初级开发者**，遇到专业术语时须在**该术语首次出现时**用 1~2 句话进行简短解释。格式如下：
+---
 
-> **EVM**（以太坊虚拟机）：以太坊用来执行智能合约的运行环境，相当于合约代码的"解释器"。只要支持 EVM 的区块链，都可以直接运行为以太坊写的合约。
+### Step 2: Full Chinese translation
 
-规则细节：
-- **同一术语只解释一次**，后续出现直接使用，不重复说明
-- 解释语言须简洁，用类比或对照说明，避免用另一个生僻术语解释
-- 下方「术语对照表」中标注了 `[需解释]` 的术语必须添加解释；其余未标注的，根据上下文判断是否对初级开发者陌生，酌情补充
+Translate the entire source into Chinese, following the rules below.
 
-#### 代码块规则
+#### General Rules
 
-- 代码内容**完整保留**，不得删改任何一行
-- 英文注释保留原文，并在其**下方新起一行**添加中文说明，格式：
+- Term translations follow the Terminology Reference Table below
+- Sentences must be fluent and natural in Chinese — avoid the awkward stiffness of literal translation
+- All section headings and sub-headings translated to Chinese
+
+#### Technical Term Explanation Rules
+
+The target reader is **an entry-level developer who has just entered Web3**. When a technical term appears, add a brief 1–2 sentence explanation **the first time the term appears**. Format:
+
+> **EVM** (Ethereum Virtual Machine): the runtime environment Ethereum uses to execute smart contracts — essentially the "interpreter" for contract code. Any blockchain that supports EVM can run contracts written for Ethereum directly.
+
+Rule details:
+- **Each term is explained only once** — subsequent occurrences use the term directly without repeating the explanation
+- Explanations must be concise — use analogies or contrasts, avoid explaining one obscure term with another
+- Terms marked `[needs explanation]` in the Terminology Reference Table below must include an explanation; for other unmarked terms, use judgment based on context — add an explanation if a beginner developer would find the term unfamiliar
+
+#### Code Block Rules
+
+- Code content **preserved in full** — must not delete, modify, or replace any line
+- English comments: keep the original, and add a Chinese explanation on a **new line below**, format:
   ```
   // Original English comment
-  // 中文：对应的中文解释
+  // 中文：corresponding Chinese explanation
   ```
-- 代码块的语言标注保留（如 ` ```rust `、` ```solidity `）
+- Keep the language annotation on the code block (e.g. ` ```rust `, ` ```solidity `)
 
-#### 图表 / 表格规则
+#### Chart / Table Rules
 
-- 表格内的文字翻译为中文
-- Mermaid 图或示意图：在图的**下方**用一段中文说明图表含义
-- **同时保留英文原版图表**，中英文版本按如下格式并列展示：
+- Table text translated to Chinese
+- Mermaid diagrams or illustrations: add a Chinese explanation paragraph **below** the diagram
+- **Preserve the original English version of the chart** — show both Chinese and English side by side in the following format:
 
   ```
-  <!-- 中文版 -->
-  [翻译后的表格或图表]
+  <!-- Chinese version -->
+  [Translated table or diagram]
 
-  <!-- 英文原版 -->
-  [原始表格或图表]
+  <!-- English original -->
+  [Original table or diagram]
   ```
 
 ---
 
-### Step 3：生成元数据摘要
+### Step 3: Generate metadata summary
 
-翻译完成后，输出以下元数据块（置于翻译内容末尾，文章正文之前）：
+After translation is complete, output the following metadata block (placed at the end of the translation, before the article body):
 
 ```
 ---
-摘要（300字以内）：
-[对本文核心内容的中文总结，面向开发者，说明文章讲了什么以及有什么实用价值]
+Abstract (under 300 characters):
+[Chinese summary of the article's core content, aimed at developers — explain what the article covers and its practical value]
 
-关键词：
-[5~8个，逗号分隔，兼顾技术精准性与 SEO 搜索热度，例：Polkadot, 智能合约, ink!, Solidity, Revive, Web3 开发]
+Keywords:
+[5–8, comma-separated, balancing technical precision with SEO search relevance, e.g.: Polkadot, 智能合约, ink!, Solidity, Revive, Web3 开发]
 
-适用平台：
-CSDN、掘金、微信公众号
+Platforms:
+CSDN, Juejin, WeChat Official Account
 
-分类：
-[从以下选项中选择最匹配的1~2项：Polkadot 生态 / 智能合约开发 / Web3 入门 / Rust 开发 / Solidity / 区块链工具]
+Categories:
+[Select the 1–2 best matches from: Polkadot Ecosystem / Smart Contract Development / Web3 Introduction / Rust Development / Solidity / Blockchain Tools]
 ---
 ```
 
 ---
 
-### Step 4：整理为 CSDN 发布格式
+### Step 4: Format for CSDN publication
 
-按以下格式输出完整文章，遵守以下规则：
+Output the complete article in the following format, following these rules:
 
-#### 字数要求
+#### Word Count Requirements
 
-- **最少 1500 字，最多 7000 字**
-- 根据原文内容的信息量自然决定篇幅，不强行压缩或注水
-- 若原文内容翻译后不足 1500 字，须通过以下方式补充至达标：
-  - 对核心概念展开更详细的背景解释
-  - 对代码示例逐行添加中文注释与说明
-  - 在章节末尾补充"小结"或"开发者提示"段落
-- 若原文内容翻译后超过 7000 字，须精简冗余表述，保留核心信息
+- **Minimum 1,500 characters, maximum 7,000 characters**
+- Let the amount of content in the source naturally determine the length — do not artificially compress or pad
+- If the translated content falls below 1,500 characters, expand by:
+  - More detailed background explanation of core concepts
+  - Line-by-line Chinese annotations and explanations for code examples
+  - Appending a "Summary" or "Developer Tips" paragraph at the end of sections
+- If the translated content exceeds 7,000 characters, condense redundant wording while preserving core information
 
-#### 文章开头规则
+#### Article Opening Rules
 
-正文第一段（位于摘要块之后）须具备吸引力，让初级开发者产生继续阅读的兴趣。可选择以下任一开头策略：
+The first body paragraph (after the abstract block) must be engaging — it should make an entry-level developer want to keep reading. Choose one of the following opening strategies:
 
-- **痛点共鸣型**：提出初学者进入 Web3 时常见的困惑或障碍，再引出本文要解决的问题
-  > 示例："刚接触 Web3 开发，你可能已经被各种链、各种工具搞得晕头转向。以太坊、Polkadot、Solidity、Rust……到底从哪里开始？"
-- **结论前置型**：先抛出一个让读者意外或感兴趣的结论，再用正文解释
-  > 示例："你现在写的以太坊合约，可以不改一行代码直接部署到 Polkadot 上——而且手续费更低、性能更强。"
-- **场景带入型**：用一个具体的开发场景引导读者进入主题
-  > 示例："假设你要在 Polkadot 上部署一个 DeFi 应用，你会发现它不仅支持你熟悉的 Solidity，还提供了一套性能更强的原生执行环境。"
+- **Pain-point resonance**: raise a confusion or barrier that beginners commonly encounter when entering Web3, then lead into the problem this article solves
+  > Example: "Just getting into Web3 development? You may already be overwhelmed by chains, tools, and jargon. Ethereum, Polkadot, Solidity, Rust… where do you even start?"
+- **Conclusion-first**: lead with a conclusion that surprises or intrigues the reader, then use the body to explain it
+  > Example: "The Ethereum contract you are writing now can be deployed directly to Polkadot without changing a single line of code — and with lower fees and better performance."
+- **Scenario-based**: guide the reader into the topic through a concrete development scenario
+  > Example: "Say you want to deploy a DeFi application on Polkadot. You will find it not only supports the Solidity you already know, but also offers a native execution environment with significantly better performance."
 
-**禁止**使用平铺直叙的背景介绍作为开头（如"本文将介绍……"、"Polkadot 是一个……"）。
+**Prohibited**: using a flat background introduction as the opening (e.g. "This article will introduce…", "Polkadot is a…").
 
-#### 标题规则
+#### Title Rules
 
-- 做 SEO 优化，使用开发者常搜索的关键词
-- 同时具备 CSDN 读者吸引力，可参考"如何……""完整指南""实战教程""零基础入门"等句式
+- SEO-optimised, using keywords developers commonly search for
+- Also appealing to CSDN readers — can reference patterns like "How to…", "Complete guide", "Hands-on tutorial", "Zero-to-one intro"
 
 ```markdown
 ---
-title: [SEO 优化中文标题]
-author: 原文作者：PaperMoon 团队
-date: [执行当日日期，格式 YYYY-MM-DD]
-categories: [分类]
-tags: [关键词列表]
+title: [SEO-optimised Chinese title]
+author: Source author: PaperMoon team
+date: [Date of execution, format YYYY-MM-DD]
+categories: [category]
+tags: [keyword list]
 ---
 
-> **摘要**：[300字以内的摘要]
+> **Abstract**: [under 300-character abstract]
 >
-> **关键词**：[关键词]
+> **Keywords**: [keywords]
 
 ---
 
-[吸引力开头段落]
+[Engaging opening paragraph]
 
-[文章正文：翻译后的中文内容，含术语解释、章节结构、代码块、图表]
+[Article body: translated Chinese content, with term explanations, section structure, code blocks, charts]
 
 ---
 
-**阅读原文**：[$URL]
+**Read original**: [$URL]
 ```
 
 ---
 
-### Step 5：保存文件
+### Step 5: Save the file
 
-1. 确认输出目录 `output/CSDN tutorials/` 存在，不存在则创建
-2. 文件命名规则：`YYYYMMDD-[SEO标题].md`
-   - 日期取执行时的当日日期
-   - 标题中的空格替换为 `-`，去除 `/`、`:`、`？` 等特殊符号
-3. 将完整文章写入该文件
+1. Confirm that the output directory `output/CSDN tutorials/` exists — create it if not
+2. File naming rule: `YYYYMMDD-[SEO-title].md`
+   - Date = date of execution
+   - Replace spaces in the title with `-`, remove `/`, `:`, `?`, and other special characters
+3. Write the complete article to the file
 
 ---
 
-## 术语对照表
+## Terminology Reference Table
 
-翻译时优先遵循下表，表中未列出的术语保留英文原文。标注 `[需解释]` 的术语须在首次出现时添加 1~2 句中文解释。
+During translation, follow this table first. Terms not in the table keep their English original. Terms marked `[needs explanation]` must include a 1–2 sentence Chinese explanation on first appearance.
 
-| 英文 | 中文译法 | 备注 |
+| English | Chinese Translation | Note |
 |------|----------|------|
-| parachain | 平行链 | [需解释] 连接到 Polkadot 中继链的独立区块链，共享中继链的安全性，同时保持自己的逻辑与状态 |
-| relay chain | 中继链 | [需解释] Polkadot 的核心链，负责协调各平行链之间的共识与通信，相当于整个网络的"主干" |
-| validator | 验证人 | [需解释] 负责验证区块、维护网络安全的节点，需要质押 DOT 作为抵押 |
-| nominator | 提名人 | 提名人 | |
-| governance | 治理 | [需解释] 指链上的去中心化决策机制，持币者可以投票决定协议升级、资金使用等重大事项 |
-| treasury | 国库 | [需解释] 由治理管理的链上资金池，用于资助生态项目和开发者 |
-| smart contract | 智能合约 | [需解释] 部署在区块链上的自动执行程序，满足预设条件时自动运行，无需人工干预 |
-| extrinsic | 外部调用（extrinsic） | [需解释] Substrate 中从链外发起的操作请求，类似以太坊中的"交易"，但范围更广 |
-| dispatchable | 可调度函数 | | |
-| weight | 权重 | [需解释] Substrate 用来衡量一笔操作计算复杂度的单位，决定该操作消耗多少手续费 |
-| fee | 费用 | | |
-| epoch | 时期 | | |
-| era | 纪元 | | |
-| block | 区块 | | |
-| transaction | 交易 | | |
-| account | 账户 | | |
-| address | 地址 | | |
-| staking | 质押 | [需解释] 将代币锁定在网络中以参与共识或获得奖励的机制，类似"押金" |
-| bonding | 绑定 | | |
-| unbonding | 解绑 | | |
-| slashing | 惩罚（slash） | [需解释] 当验证人出现恶意行为或严重失误时，其质押的代币会被没收一部分作为惩罚 |
-| cross-chain | 跨链 | [需解释] 不同区块链之间传递数据或资产的能力 |
-| interoperability | 互操作性 | | |
-| dispatch | 调度 | | |
-| storage | 存储 | | |
-| event | 事件 | | |
-| error | 错误 | | |
-| call | 调用 | | |
-| origin | 来源 | | |
-| pallet | pallet（保留英文） | [需解释] Substrate 框架中的功能模块，类似乐高积木，开发者可以组合不同 pallet 来构建区块链的功能 |
-| runtime | runtime（保留英文） | [需解释] 区块链的核心逻辑层，定义了链上所有规则和状态转换，相当于区块链的"操作系统" |
-| ink! | ink!（保留英文） | [需解释] Polkadot 生态中用 Rust 语言编写智能合约的框架，编译为 WASM 在链上运行 |
-| Substrate | Substrate（保留英文） | [需解释] Polkadot 生态的区块链开发框架，开发者可以用它快速构建自定义区块链，Polkadot 本身也是用 Substrate 构建的 |
-| XCM | XCM（保留英文） | [需解释] 跨共识消息格式（Cross-Consensus Messaging），Polkadot 生态中链与链之间传递消息和资产的标准协议 |
-| EVM | EVM（保留英文） | [需解释] 以太坊虚拟机（Ethereum Virtual Machine），以太坊用来执行智能合约的运行环境，支持 EVM 的链都可以运行 Solidity 合约 |
-| Revive | Revive（保留英文） | [需解释] 将 Solidity 合约编译为 PVM（RISC-V）字节码的编译器，让以太坊合约在 Polkadot 原生环境中运行 |
-| PVM | PVM（保留英文） | [需解释] Polkadot 虚拟机（Polkadot Virtual Machine），基于 RISC-V 指令集的原生执行环境，性能更高、费用更低 |
-| JAM | JAM（保留英文） | [需解释] Join-Accumulate Machine，Polkadot 下一代核心协议，旨在进一步提升网络性能与灵活性 |
-| WASM / WebAssembly | WASM / WebAssembly（保留英文） | [需解释] 一种高效的二进制指令格式，可在不同平台上运行，Polkadot 生态早期用它执行合约代码 |
-| RPC | RPC（保留英文） | | |
-| API | API（保留英文） | | |
-| CLI | CLI（保留英文） | | |
-| precompile | 预编译合约（precompile） | [需解释] 预先内置在链上的特殊合约，用于访问链的原生功能（如跨链转账），调用方式与普通合约相同 |
-| JSON-RPC | JSON-RPC（保留英文） | [需解释] 一种通过 JSON 格式进行远程调用的协议，以太坊节点和 Polkadot 节点都通过它对外提供接口 |
+| parachain | 平行链 | [needs explanation] An independent blockchain connected to the Polkadot relay chain, sharing its security while maintaining its own logic and state |
+| relay chain | 中继链 | [needs explanation] Polkadot's core chain, responsible for coordinating consensus and communication among parachains — the "backbone" of the network |
+| validator | 验证人 | [needs explanation] A node responsible for validating blocks and maintaining network security, required to stake DOT as collateral |
+| nominator | 提名人 | |
+| governance | 治理 | [needs explanation] The on-chain decentralised decision-making mechanism — token holders can vote on protocol upgrades, fund usage, and other major matters |
+| treasury | 国库 | [needs explanation] An on-chain fund pool managed by governance, used to fund ecosystem projects and developers |
+| smart contract | 智能合约 | [needs explanation] A program deployed on a blockchain that executes automatically when pre-set conditions are met, without human intervention |
+| extrinsic | 外部调用（extrinsic） | [needs explanation] In Substrate, an operation request initiated from outside the chain — similar to an Ethereum "transaction" but broader in scope |
+| dispatchable | 可调度函数 | |
+| weight | 权重 | [needs explanation] The unit Substrate uses to measure the computational complexity of an operation, determining how much fee it consumes |
+| fee | 费用 | |
+| epoch | 时期 | |
+| era | 纪元 | |
+| block | 区块 | |
+| transaction | 交易 | |
+| account | 账户 | |
+| address | 地址 | |
+| staking | 质押 | [needs explanation] Locking tokens in the network to participate in consensus or earn rewards — similar to a "deposit" |
+| bonding | 绑定 | |
+| unbonding | 解绑 | |
+| slashing | 惩罚（slash） | [needs explanation] When a validator acts maliciously or makes a severe error, a portion of their staked tokens is confiscated as a penalty |
+| cross-chain | 跨链 | [needs explanation] The ability to transfer data or assets between different blockchains |
+| interoperability | 互操作性 | |
+| dispatch | 调度 | |
+| storage | 存储 | |
+| event | 事件 | |
+| error | 错误 | |
+| call | 调用 | |
+| origin | 来源 | |
+| pallet | pallet (keep English) | [needs explanation] A functional module in the Substrate framework — like LEGO bricks, developers can combine different pallets to build blockchain features |
+| runtime | runtime (keep English) | [needs explanation] The core logic layer of a blockchain, defining all on-chain rules and state transitions — analogous to the blockchain's "operating system" |
+| ink! | ink! (keep English) | [needs explanation] The framework for writing smart contracts in Rust in the Polkadot ecosystem — compiles to WASM and runs on-chain |
+| Substrate | Substrate (keep English) | [needs explanation] The blockchain development framework for the Polkadot ecosystem — developers can use it to quickly build custom blockchains; Polkadot itself is built with Substrate |
+| XCM | XCM (keep English) | [needs explanation] Cross-Consensus Messaging — the standard protocol in the Polkadot ecosystem for passing messages and assets between chains |
+| EVM | EVM (keep English) | [needs explanation] Ethereum Virtual Machine — Ethereum's runtime environment for executing smart contracts; chains that support EVM can run Solidity contracts |
+| Revive | Revive (keep English) | [needs explanation] A compiler that compiles Solidity contracts into PVM (RISC-V) bytecode, allowing Ethereum contracts to run natively on Polkadot |
+| PVM | PVM (keep English) | [needs explanation] Polkadot Virtual Machine — the native execution environment based on the RISC-V instruction set; higher performance and lower fees |
+| JAM | JAM (keep English) | [needs explanation] Join-Accumulate Machine — Polkadot's next-generation core protocol, aiming to further improve network performance and flexibility |
+| WASM / WebAssembly | WASM / WebAssembly (keep English) | [needs explanation] An efficient binary instruction format that can run across different platforms; used in the early Polkadot ecosystem to execute contract code |
+| RPC | RPC (keep English) | |
+| API | API (keep English) | |
+| CLI | CLI (keep English) | |
+| precompile | 预编译合约（precompile） | [needs explanation] A special contract pre-built into the chain to access native chain features (e.g. cross-chain transfers) — called in the same way as ordinary contracts |
+| JSON-RPC | JSON-RPC (keep English) | [needs explanation] A remote call protocol using JSON format; both Ethereum nodes and Polkadot nodes expose interfaces through it |
 
 ---
 
-## 质量检查清单
+## Quality Checklist
 
-输出文件前，逐项确认：
+Confirm each item before outputting the file:
 
-- [ ] 所有段落均已翻译，无遗漏
-- [ ] 代码块完整，无截断，中文注释已添加
-- [ ] 图表有中文说明，英文原版已保留
-- [ ] 元数据（摘要、关键词、分类）已填写
-- [ ] 标题已做 SEO 优化
-- [ ] 文章开头使用了吸引力策略（痛点共鸣 / 结论前置 / 场景带入），未使用平铺直叙开头
-- [ ] 术语对照表中标注 `[需解释]` 的术语，在首次出现时均已添加 1~2 句解释
-- [ ] 文章字数在 1500~7000 字之间（不含代码块）
-- [ ] 文末包含「阅读原文」链接
-- [ ] 文件已保存至 `output/CSDN tutorials/`，命名符合规则
+- [ ] All paragraphs translated — none missed
+- [ ] Code blocks complete and untruncated — Chinese annotations added
+- [ ] Charts have Chinese explanations — English original preserved
+- [ ] Metadata (abstract, keywords, categories) filled in
+- [ ] Title is SEO-optimised
+- [ ] Article opening uses an engaging strategy (pain-point resonance / conclusion-first / scenario-based) — flat background introduction not used
+- [ ] Terms marked `[needs explanation]` in the Terminology Reference Table each have a 1–2 sentence explanation on first appearance
+- [ ] Article word count between 1,500 and 7,000 (excluding code blocks)
+- [ ] "Read original" link at the end
+- [ ] File saved to `output/CSDN tutorials/`, naming follows the rules

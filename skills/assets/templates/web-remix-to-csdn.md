@@ -1,243 +1,243 @@
-# 网页素材混搭 → CSDN 原创文章生成模板
+# Web Source Remix → CSDN Original Article Template
 
-## 定位
+## Purpose
 
-将外部网页博客、Twitter/X 帖子等素材，与项目已有的 `output/` 文章库融合，生成一篇立意新颖、内容丰富、可读性强的 CSDN 原创文章。
+Take external web blogs, Twitter/X posts, and other source material, combine it with the existing `output/` article library, and produce an original CSDN article with a fresh angle, rich content, and strong readability.
 
-**与其他模板的区别**：
-- `wiki-to-csdn.md`：单一 wiki 页面的翻译重构
-- `polkadot-docs-to-csdn.md`：操作教程类
-- **本模板**：多源素材混搭 + 已有内容库融合 → 全新立意的原创文章
-
----
-
-## 输入
-
-1. **外部素材链接**（至少 1 个，可多个混合）：
-   - 网页博客 URL（任意域名）
-   - Twitter/X 帖子链接
-   - 其他可读取的网页链接
-2. **（可选）写作方向提示**：用户可指定侧重角度，如"从开发者视角"、"重点讲经济模型变化"等
+**How this differs from other templates**:
+- `wiki-to-csdn.md`: translation and restructuring of a single wiki page
+- `polkadot-docs-to-csdn.md`: how-to tutorial format
+- **This template**: multi-source remix + existing library integration → original article with a new angle
 
 ---
 
-## 执行步骤
+## Input
 
-### Step 1：抓取外部素材
+1. **External source links** (at least 1, can mix multiple):
+   - Web blog URL (any domain)
+   - Twitter/X post link
+   - Any other readable web page link
+2. **(Optional) Writing direction hint**: the user may specify a desired angle, e.g. "from a developer perspective", "focus on economic model changes", etc.
 
-对每个输入链接：
+---
 
-**网页博客**：使用 WebFetch 抓取完整内容，提取：
-- 标题、作者、发布日期
-- 正文核心观点与数据
-- 文中引用的关键数据、图表、代码片段
+## Execution Steps
 
-**Twitter/X 链接**：使用 adhx skill 获取帖子内容，提取：
-- 发帖人、发帖时间
-- 帖子正文（含线程展开）
-- 互动数据（点赞、转发、评论数——仅作参考，不写入正文）
-- 帖子中引用的链接（如有，追加抓取）
+### Step 1: Fetch external sources
 
-将每个素材整理为内部工作卡片（不输出给用户）：
+For each input link:
+
+**Web blog**: use WebFetch to retrieve the full content, extracting:
+- Title, author, publication date
+- Core arguments and data from the body
+- Key data, charts, and code snippets cited in the article
+
+**Twitter/X link**: use the `adhx` skill to fetch the post content, extracting:
+- Poster, post time
+- Post body (including thread expansion)
+- Engagement data (likes, retweets, comments — for reference only, do not include in the article body)
+- Links cited in the post (if any, fetch those too)
+
+Organise each source into an internal work card (do not output to the user):
 
 ```
-【素材卡片】
-来源：[URL]
-类型：博客 / Twitter / 其他
-标题/摘要：[一句话]
-核心观点：
-  - [观点1]
-  - [观点2]
-  - [观点3]
-关键数据：[如有]
-发布时间：[日期]
+[Source Card]
+Source: [URL]
+Type: Blog / Twitter / Other
+Title/Summary: [one sentence]
+Core arguments:
+  - [argument 1]
+  - [argument 2]
+  - [argument 3]
+Key data: [if any]
+Publication date: [date]
 ```
 
 ---
 
-### Step 2：扫描已有内容库
+### Step 2: Scan the existing content library
 
-读取 `output/` 目录下所有子文件夹的文章列表：
+Read the article lists from all subdirectories under `output/`:
 - `output/polkadot-hype-articles/`
 - `output/monthly-recap/`
 - `output/CSDN tutorials/`
 
-根据 Step 1 提取的素材主题关键词，筛选出 **3-8 篇**最相关的已有文章，快速扫描其标题、摘要和核心章节，提取可融合的内容点：
+Based on the topic keywords extracted in Step 1, identify **3–8** of the most relevant existing articles. Quickly scan their titles, summaries, and core sections to extract integration points:
 
-- 已有文章中对同一话题的**不同切角或更深层分析**
-- 已有文章中的**数据、案例、技术细节**可作为本文的佐证
-- 已有文章中**尚未覆盖**的空白点——这可能是本文的新意来源
+- **Different angles or deeper analysis** on the same topic from existing articles
+- **Data, case studies, technical details** from existing articles that can corroborate this article
+- **Gaps not yet covered** in existing articles — these may be the source of novelty for this article
 
-整理为融合清单（不输出给用户）：
+Compile into an integration list (do not output to the user):
 
 ```
-【融合清单】
-相关已有文章：
-  - [文件名]：可融合点 → [具体内容]
-  - [文件名]：可融合点 → [具体内容]
-空白机会：[已有文章未覆盖但外部素材提到的新角度]
+[Integration List]
+Relevant existing articles:
+  - [filename]: integration point → [specific content]
+  - [filename]: integration point → [specific content]
+Gap opportunities: [new angles mentioned in external sources but not covered in existing articles]
 ```
 
 ---
 
-### Step 3：确定文章立意与结构
+### Step 3: Determine article angle and structure
 
-基于素材卡片 + 融合清单，确定：
+Based on the source cards + integration list, determine:
 
-#### 立意策略（选择最适合的一种）
+#### Angle Strategy (choose the most suitable one)
 
-| 策略 | 适用场景 | 示例 |
+| Strategy | When to Use | Example |
 |------|---------|------|
-| **反差对比** | 外部素材与已有认知存在冲突 | "社区都在喊牛市，但链上数据讲了另一个故事" |
-| **趋势串联** | 多个独立事件暗含同一方向 | "三件看似无关的事，指向Polkadot的同一个转向" |
-| **深层追问** | 热点事件背后有未被讨论的问题 | "所有人都在聊JAM上线，没人问的那个问题才是关键" |
-| **时间线重构** | 同一主题在不同时间的演变 | "从提案到落地：这个功能走了18个月的弯路" |
-| **圈外视角** | 用非区块链领域的框架解读 | "用SaaS定价逻辑看Coretime——Polkadot在卖什么" |
-| **被忽视的细节** | 大事件中的小变化才是真正的信号 | "这次Runtime升级里藏了一行参数改动，影响比主功能还大" |
+| **Contrast** | External source conflicts with existing understanding | "The community is bullish, but on-chain data tells a different story" |
+| **Trend threading** | Multiple independent events point to the same direction | "Three seemingly unrelated events all point to the same pivot in Polkadot" |
+| **Deeper questioning** | A hot event has underlying questions no one is discussing | "Everyone is talking about JAM launching; the question nobody is asking is the real issue" |
+| **Timeline reconstruction** | How the same topic evolved across different time periods | "From proposal to launch: how this feature took an 18-month detour" |
+| **Outside-in perspective** | Interpreting through a non-blockchain framework | "Viewing Coretime through SaaS pricing logic — what is Polkadot actually selling?" |
+| **Overlooked detail** | A small change inside a big event is the real signal | "This Runtime upgrade hid one line of parameter change — with bigger impact than the main feature" |
 
-#### 标题策略
+#### Title Strategy
 
-标题必须同时满足：
-1. **有信息量**：读者看完标题知道文章大致在说什么
-2. **有认知张力**：制造好奇心、挑战预期、或暗示独特视角
-3. **SEO 友好**：包含 Polkadot 相关关键词
+The title must simultaneously satisfy:
+1. **Informative**: readers know roughly what the article is about after reading the title
+2. **Cognitive tension**: creates curiosity, challenges expectations, or hints at a unique perspective
+3. **SEO-friendly**: contains Polkadot-related keywords
 
-标题句式参考（不限于此）：
-- `[现象] 背后的 [真实逻辑]`
-- `别只看 [A]，[B] 才是这次升级的重点`
-- `从 [X] 到 [Y]：Polkadot 正在做一道 [Z] 选择题`
-- `[数据/事实] 说明了什么？——[主题] 的 [N] 个信号`
-- `为什么 [热门观点] 只说对了一半`
-- `[事件A] + [事件B]，拼出 Polkadot [方向] 的完整图景`
+Title sentence patterns for reference (not exhaustive):
+- `The [real logic] behind [phenomenon]`
+- `Don't just look at [A] — [B] is the real point of this upgrade`
+- `From [X] to [Y]: Polkadot is answering a [Z] question`
+- `What does [data/fact] tell us? — [N] signals about [topic]`
+- `Why [popular opinion] is only half right`
+- `[Event A] + [Event B]: the complete picture of Polkadot's [direction]`
 
-**禁止**：
-- 纯信息堆砌型标题："Polkadot 最新进展汇总"
-- 空洞悬念型标题："震惊！Polkadot 居然……"
-- 问号堆砌型标题："Polkadot 能行吗？会涨吗？值得买吗？"
+**Prohibited**:
+- Pure information-pile titles: "Polkadot Latest Developments Summary"
+- Empty suspense titles: "Shocking! Polkadot actually…"
+- Question-stacking titles: "Can Polkadot do it? Will it go up? Is it worth buying?"
 
-#### 文章大纲
+#### Article Outline
 
-生成 4-7 个章节的大纲，每个章节标注素材来源（哪个外部链接 + 哪篇已有文章）。大纲结构不拘泥于固定模式，跟着立意走，但须确保：
+Generate an outline of 4–7 sections, with each section annotated with its source material (which external link + which existing article). The outline structure is not fixed — follow the angle — but must ensure:
 
-- 开篇制造认知张力（不是背景介绍）
-- 中间有实质内容（数据、机制拆解、案例）
-- 收尾有判断力度（不是"展望未来"）
+- Opening creates cognitive tension (not background introduction)
+- Middle has substantive content (data, mechanism breakdown, case studies)
+- Closing has a strong judgment (not "looking forward to the future")
 
 ---
 
-### Step 4：撰写正文
+### Step 4: Write the body
 
-#### 写作风格
+#### Writing Style
 
-遵循 `assets/styles/_base.md` 的基础风格：
-- 冷静观察者视角，不是新闻播报
-- 立场明确但基于事实
-- 长句为主，破折号插入补充说明
-- 敢于指出问题，承认不确定性
+Follow the base style in `assets/styles/_base.md`:
+- Calm observer perspective, not news reporting
+- Clear stance grounded in facts
+- Long sentences as primary form, with em-dashes for supplementary explanations
+- Willing to point out problems, acknowledge uncertainty
 
-#### 素材融合规则
+#### Source Integration Rules
 
-- **外部素材**：提取核心观点和数据，用自己的语言重新表达，不照搬原文
-- **已有文章**：引用其中的分析框架、数据或判断来支撑本文论点，但不重复已有文章的主旨
-- **融合比例**：外部素材占主体（60-70%），已有内容作为背景和补充（30-40%）
-- **标注来源**：正文中对关键数据和观点标注出处（自然融入句中，如"根据 Parity 3 月的博客……"）
+- **External sources**: extract core arguments and data, restate in your own words — do not copy the original text
+- **Existing articles**: cite their analytical frameworks, data, or judgments to support this article's argument, but do not repeat the main thesis of existing articles
+- **Integration ratio**: external sources form the main body (60–70%), existing content serves as background and supplement (30–40%)
+- **Cite sources**: attribute key data and arguments inline (naturally woven into sentences, e.g. "according to Parity's March blog…")
 
-#### 格式要求
+#### Format Requirements
 
 ```markdown
 ---
-title: [创意标题]
-author: 素材来源：[列出主要来源名称，用 / 分隔]
-date: [执行当日日期，格式 YYYY-MM-DD]
-categories: [分类]
-tags: [关键词列表]
+title: [Creative title]
+author: Source material: [list main source names, separated by /]
+date: [Date of execution, format YYYY-MM-DD]
+categories: [category]
+tags: [keyword list]
 ---
 
-> **摘要**：[200字以内，说清楚文章的核心论点和读者能获得什么]
+> **Abstract**: [under 200 characters — clearly state the article's core argument and what readers will gain]
 >
-> **关键词**：[6-10个]
+> **Keywords**: [6–10]
 
 ---
 
-[钩子段：制造认知张力，让人想读下去]
+[Hook paragraph: create cognitive tension, make the reader want to continue]
 
-[立意段：1-2句话揭示本文的独特视角，不是内容预告]
-
----
-
-## [章节标题——带判断，不是纯事实陈述]
-
-[正文内容]
+[Angle paragraph: 1–2 sentences revealing the article's unique perspective — not a content preview]
 
 ---
 
-## 小结
+## [Section title — carries a judgment, not a pure statement of fact]
 
-- **[要点1]**：[一句话]
-- **[要点2]**：[一句话]
-- **[要点3]**：[一句话]
-
-[升华结语：提到更高层次，有力量感]
+[Body content]
 
 ---
 
-**参考资料**：
-- [来源标题](URL) —— 外部素材链接（全部列出）
-- [已有文章标题] —— 项目内引用（如直接引用了具体内容）
+## 小结 (Summary)
+
+- **[Point 1]**: [one sentence]
+- **[Point 2]**: [one sentence]
+- **[Point 3]**: [one sentence]
+
+[Closing statement: elevate to a higher level, with force]
+
+---
+
+**References**:
+- [Source title](URL) —— external source links (list all)
+- [Existing article title] —— internal project citations (if specific content was directly cited)
 ```
 
-#### 字数要求
+#### Word Count Requirements
 
-- **1500-4000 字**（不含代码块与表格）
-- 信息密度优先于字数，不注水
-- 每个章节 200-600 字，节奏紧凑
-
----
-
-### Step 5：AI 去痕处理
-
-**必须执行**。将写好的正文按照 `templates/humanizer-zh.md` 进行全文检查：
-
-1. 判断文章风格类型（通常为"公众号/社区文章"或"学术/技术深度文章"）
-2. 逐一扫描 24 种 AI 写作模式
-3. 重写命中的问题片段
-4. 整体润色，确保节奏变化、衔接自然
-
-**去痕重点关注**：
-- 开头不要用"在……的背景下"、"随着……的发展"等 AI 开场套话
-- 不要每段都有"值得注意的是"、"此外"等连接词
-- 结尾不要用"未来充满希望"、"让我们拭目以待"等空洞收尾
-- 不要三个形容词并列："高效、安全、灵活"
-- 粗体不超过 5 处，破折号不超过 3 处
-
-**注意**：去痕处理直接应用到正文中，不需要输出"修改前/修改后"对比（那是单独使用 humanizer 时的格式）。本模板中去痕是写作流程的一部分，直接输出最终版本。
+- **1,500–4,000 characters** (excluding code blocks and tables)
+- Information density takes priority over word count — do not pad
+- Each section 200–600 characters, tight pacing
 
 ---
 
-### Step 6：保存文件
+### Step 5: AI de-fingerprinting
 
-1. 确认输出目录 `output/polkadot-hype-articles/` 存在
-2. 文件命名：`YYYYMMDD-[SEO标题关键词].md`
-   - 日期取执行当日
-   - 标题中空格替换为 `-`，去除特殊符号
-   - 长度控制在 50 字符以内
-3. 将完整文章写入文件
+**Must be executed**. Run the completed body through `templates/humanizer-zh.md` for a full check:
+
+1. Determine the article's style type (usually "WeChat/community article" or "academic/technical in-depth article")
+2. Scan through all 24 AI writing patterns
+3. Rewrite flagged problem passages
+4. Overall polish: ensure rhythm variation and natural transitions
+
+**Key de-fingerprinting focus areas**:
+- Opening must not use AI boilerplate openers like "In the context of…" or "As… continues to develop…"
+- Do not start every paragraph with "it is worth noting that", "in addition", or similar connectors
+- Closing must not use hollow endings like "the future is full of hope" or "let us wait and see"
+- Do not list three adjectives in parallel: "efficient, secure, flexible"
+- Bold text no more than 5 times; em-dashes no more than 3 times
+
+**Note**: de-fingerprinting is applied directly to the body text — no need to output a before/after comparison (that format is for standalone use of humanizer). In this template, de-fingerprinting is part of the writing workflow; output the final version directly.
 
 ---
 
-## 质量检查清单
+### Step 6: Save the file
 
-输出文件前逐项确认：
+1. Confirm that the output directory `output/polkadot-hype-articles/` exists
+2. File naming: `YYYYMMDD-[SEO-title-keywords].md`
+   - Date = date of execution
+   - Replace spaces in the title with `-`, remove special characters
+   - Keep length under 50 characters
+3. Write the complete article to the file
 
-- [ ] 至少抓取了 1 个外部素材链接的内容
-- [ ] 已扫描 `output/` 目录并找到相关已有文章用于融合
-- [ ] 文章立意有新意，不是对外部素材的简单翻译/搬运
-- [ ] 标题有信息量 + 认知张力 + SEO 关键词
-- [ ] 开头制造了认知张力（不是背景铺垫）
-- [ ] 正文中关键数据和观点标注了出处
-- [ ] 已有文章的内容作为补充融入，不是主体
-- [ ] 已执行 humanizer-zh 去痕检查，无明显 AI 写作痕迹
-- [ ] 末尾有小结（要点 ≤5 条 + 升华结语）
-- [ ] 末尾有参考资料，所有外部素材链接均已列出
-- [ ] 字数在 1500-4000 之间
-- [ ] 文件已保存至 `output/polkadot-hype-articles/`
+---
+
+## Quality Checklist
+
+Confirm each item before outputting the file:
+
+- [ ] At least 1 external source link's content was fetched
+- [ ] Scanned the `output/` directory and found relevant existing articles for integration
+- [ ] Article angle is original — not a simple translation / copy of the external sources
+- [ ] Title has information + cognitive tension + SEO keywords
+- [ ] Opening creates cognitive tension (not background setup)
+- [ ] Key data and arguments in the body are attributed to their sources
+- [ ] Content from existing articles is integrated as supplement, not the main body
+- [ ] Humanizer-zh de-fingerprinting check completed — no obvious AI writing patterns
+- [ ] Summary at the end (≤5 points + closing statement)
+- [ ] References at the end — all external source links listed
+- [ ] Word count between 1,500 and 4,000
+- [ ] File saved to `output/polkadot-hype-articles/`

@@ -1,302 +1,302 @@
-# YouTube 视频素材 → CSDN 原创文章生成模板
+# YouTube Video Source → CSDN Original Article Template
 
-## 定位
+## Purpose
 
-将 YouTube 视频内容（通过字幕提取）与项目已有的 `output/` 文章库融合，生成一篇立意新颖、科普性强、可读性高的 CSDN 原创文章。面向非区块链原生读者，目标是让复杂技术概念通过证据化解释和现有文档佐证变得可理解。
+Take YouTube video content (extracted via subtitles) and combine it with the existing `output/` article library to produce an original CSDN article with a fresh angle, strong popular-science accessibility, and high readability. Aimed at readers who are not native to blockchain — the goal is to make complex technical concepts understandable through evidence-based explanation and corroboration from existing documents.
 
-**与其他模板的区别**：
-- `web-remix-to-csdn.md`：博客/Twitter 等文本素材的混搭
-- `wiki-to-csdn.md`：单一 wiki 页面的翻译重构
-- **本模板**：YouTube 视频字幕分析 + 已有内容库融合 → 面向科普的原创文章
+**How this differs from other templates**:
+- `web-remix-to-csdn.md`: remix of text sources such as blogs / Twitter
+- `wiki-to-csdn.md`: translation and restructuring of a single wiki page
+- **This template**: YouTube subtitle analysis + existing library integration → original popular-science article
 
-**核心差异**：视频素材的特殊性在于——内容是口语化的、对话式的、往往包含未经整理的第一手判断和未公开的思路推演。这是文字素材很难提供的"原始观点密度"。本模板的任务是从这些口语化内容中提炼出结构化洞察，再与已有技术文章的严谨分析互补。
-
----
-
-## 输入
-
-1. **YouTube 视频链接**（1 个或多个）
-2. **（可选）写作方向提示**：用户可指定侧重角度
+**Core difference**: the special value of video material is that it is conversational, dialogue-driven, and often contains unpolished first-hand judgments and unreleased lines of reasoning. This is a "raw opinion density" that text sources rarely provide. The task of this template is to distil structured insights from this conversational content, then complement it with the rigorous analysis in existing technical articles.
 
 ---
 
-## 执行步骤
+## Input
 
-### Step 1：提取视频内容
+1. **YouTube video link** (one or more)
+2. **(Optional) Writing direction hint**: the user may specify a desired angle
 
-对输入的 YouTube 链接，使用 `/youtube-ref` skill 获取完整字幕和分析：
+---
+
+## Execution Steps
+
+### Step 1: Extract video content
+
+For each input YouTube link, use the `/youtube-ref` skill to retrieve the full subtitles and analysis:
 
 ```
 /youtube-ref [YouTube URL]
 ```
 
-等待 skill 执行完成，reference 文件生成后，读取完整文件内容，提取：
-- 视频标题、频道、发布日期、时长、播放量
-- Summary（概要）
-- Key Takeaways（核心要点）
-- Full Transcript（完整字幕）
+Wait for the skill to finish executing and the reference file to be generated, then read the full file and extract:
+- Video title, channel, publication date, duration, view count
+- Summary
+- Key Takeaways
+- Full Transcript
 
-**如果 youtube-ref skill 不可用或字幕获取失败**，退回手动模式：
+**If the youtube-ref skill is unavailable or subtitle retrieval fails**, fall back to manual mode:
 ```bash
 python3 ~/.claude/skills/youtube-ref/scripts/fetch_transcript.py "VIDEO_ID"
 ```
 
-将视频内容整理为素材卡片（不输出给用户）：
+Organise the video content into a source card (do not output to the user):
 
 ```
-【视频素材卡片】
-来源：[YouTube URL]
-标题：[视频标题]
-频道：[频道名] · [时长] · [播放量]
-发布时间：[日期]
-语言：[字幕语言]
-核心主题：[一句话概括]
-关键观点：
-  - [观点1]
-  - [观点2]
-  - [观点3]
-  - [观点4]
-  - [观点5]
-可引用原话：
-  - "[说话人原文]" — [时间戳]
-  - "[说话人原文]" — [时间戳]
-关键数据/细节：[如有]
+[Video Source Card]
+Source: [YouTube URL]
+Title: [Video title]
+Channel: [Channel name] · [Duration] · [View count]
+Publication date: [Date]
+Language: [Subtitle language]
+Core topic: [One-sentence summary]
+Key arguments:
+  - [argument 1]
+  - [argument 2]
+  - [argument 3]
+  - [argument 4]
+  - [argument 5]
+Quotable lines:
+  - "[Speaker's words]" — [timestamp]
+  - "[Speaker's words]" — [timestamp]
+Key data / details: [if any]
 ```
 
-#### 视频内容深度分析要求
+#### Deep Video Content Analysis Requirements
 
-仅靠 Summary 和 Key Takeaways 不够。必须通读完整字幕，关注以下内容：
+Relying only on the Summary and Key Takeaways is not enough. The full subtitles must be read in their entirety, paying attention to:
 
-1. **未被摘要捕捉的细节**：说话人随口提到的数据、类比、案例——这些往往是最好的文章素材
-2. **观点推演过程**：不只要结论，还要说话人如何一步步得出结论的推理链
-3. **对话中的张力点**：主持人追问、说话人犹豫或修正观点的瞬间——这些是认知张力的来源
-4. **可直接引用的原话**：挑出 3-5 句最有力度、最有画面感、或最能代表核心立场的原话，记录时间戳
+1. **Details not captured by the summary**: data, analogies, and examples the speaker mentions in passing — these are often the best article material
+2. **Reasoning process**: not just conclusions, but how the speaker arrived at them step by step
+3. **Points of tension in the dialogue**: follow-up questions from the host, moments where the speaker hesitates or revises their view — these are sources of cognitive tension
+4. **Directly quotable lines**: pick out 3–5 sentences with the most force, the most vivid imagery, or the clearest representation of the speaker's core stance — record the timestamps
 
 ---
 
-### Step 2：扫描已有内容库
+### Step 2: Scan the existing content library
 
-读取 `output/` 目录下所有子文件夹的文章列表：
+Read the article lists from all subdirectories under `output/`:
 - `output/polkadot-hype-articles/`
 - `output/monthly-recap/`
 - `output/CSDN tutorials/`
 
-同时读取 `references/` 目录下的参考素材（如有其他 youtube-ref 文件）。
+Also read reference materials under `references/` (e.g. other youtube-ref files, if any).
 
-根据 Step 1 提取的视频主题关键词，筛选出 **3-8 篇**最相关的已有文章，快速扫描其标题、摘要和核心章节，提取可融合的内容点：
+Based on the video's topic keywords extracted in Step 1, identify **3–8** of the most relevant existing articles. Quickly scan their titles, summaries, and core sections to extract integration points:
 
-- 已有文章中对视频提到的同一话题的**技术深度分析**——视频中的口语化论述 + 已有文章的严谨拆解 = 最佳互补
-- 已有文章中的**数据、机制图解、对比表格**——作为视频观点的佐证材料
-- 已有文章中**尚未覆盖**的角度——视频中提到但之前文章没写过的新信息
+- **Technical in-depth analysis** of topics the video raises — the video's conversational discussion + existing articles' rigorous breakdown = best complement
+- **Data, mechanism diagrams, comparison tables** from existing articles — as corroboration for the video's arguments
+- **Angles not yet covered** in existing articles — new information the video raises that previous articles have not written about
 
-整理为融合清单（不输出给用户）：
+Compile into an integration list (do not output to the user):
 
 ```
-【融合清单】
-相关已有文章：
-  - [文件名]：可融合点 → [具体内容]
-  - [文件名]：可融合点 → [具体内容]
-空白机会：[视频中出现但已有文章未覆盖的新信息/新角度]
-佐证配对：[视频观点A] ← 可用 [已有文章X] 的数据/分析佐证
+[Integration List]
+Relevant existing articles:
+  - [filename]: integration point → [specific content]
+  - [filename]: integration point → [specific content]
+Gap opportunities: [information / angles that appear in the video but are not covered by existing articles]
+Corroboration pairings: [Video argument A] ← can be corroborated by [Existing article X]'s data / analysis
 ```
 
 ---
 
-### Step 3：确定文章立意与结构
+### Step 3: Determine article angle and structure
 
-基于视频素材卡片 + 融合清单，确定立意。
+Based on the video source card + integration list, determine the angle.
 
-#### 立意策略（选择最适合的一种）
+#### Angle Strategy (choose the most suitable one)
 
-| 策略 | 适用场景 | 示例 |
+| Strategy | When to Use | Example |
 | --- | --- | --- |
-| **内部人视角** | 视频说话人透露了公开文档中没有的判断或规划 | "Gavin Wood 说了一句没人注意的话，暗示了 DOT 经济模型的真实方向" |
-| **口语 vs 白皮书** | 视频中的口语表达比官方文档更直白/更激进 | "白皮书不会告诉你的——从一段访谈看 Polkadot 的真实意图" |
-| **多视频串联** | 不同时期/不同人的视频指向同一趋势 | "三个不同场合的发言，拼出 Polkadot 2026 的真实路线图" |
-| **视频观点验证** | 视频中的预判/规划与后来的链上变更对照 | "半年前他说的那句话，现在正在链上发生" |
-| **科普翻译** | 视频内容技术密度高，需要为非技术读者翻译 | "用 10 分钟看懂 Gavin Wood 讲了 33 分钟的东西" |
-| **被忽视的片段** | 视频中一个小段落包含了最重要的信息 | "这段访谈 33 分钟，但最关键的信息只有 2 分钟" |
+| **Insider perspective** | The speaker reveals judgments or plans not in public documents | "Gavin Wood said something nobody noticed — hinting at the real direction of the DOT economic model" |
+| **Spoken word vs. whitepaper** | The video's spoken delivery is more direct / more bold than the official docs | "What the whitepaper won't tell you — reading Polkadot's real intentions from an interview" |
+| **Multi-video threading** | Videos from different periods / different speakers point to the same trend | "Three statements from three different occasions — assembling Polkadot's true 2026 roadmap" |
+| **Video prediction verified** | A prediction / plan in the video compared to what has since happened on-chain | "What he said half a year ago is now happening on-chain" |
+| **Popular science translation** | Video content is high-density technical, needs to be made accessible for non-technical readers | "Understand in 10 minutes what Gavin Wood spent 33 minutes explaining" |
+| **Overlooked segment** | One small section of the video contains the most important information | "This interview is 33 minutes — the most critical information is only 2 minutes" |
 
-#### 科普导向的特殊要求
+#### Special Requirements for Popular Science Orientation
 
-本模板的目标受众包括**非区块链原生读者**，因此：
+This template's target audience includes **readers who are not native to blockchain**, so:
 
-1. **每个技术概念第一次出现时必须解释**——用 1-2 句话，不是术语堆砌
-2. **用类比替代定义**——"共享安全就像小区物业：每户不用自己请保安，整个小区共享一支安保团队"
-3. **用具体场景替代抽象描述**——不说"跨链互操作性"，说"在 A 链上买的 NFT 可以直接在 B 链上使用"
-4. **数据要有参照物**——不说"6 秒出块"，说"6 秒出一个块——信用卡刷卡确认大约需要 3-5 秒，作为参照"
+1. **Every technical concept must be explained the first time it appears** — in 1–2 sentences, not terminology stacking
+2. **Use analogies instead of definitions** — "shared security is like a residential property management company: each unit doesn't need to hire its own security guard — the whole complex shares one security team"
+3. **Use concrete scenarios instead of abstract descriptions** — don't say "cross-chain interoperability"; say "an NFT you bought on chain A can be used directly on chain B"
+4. **Data needs a reference point** — don't say "6-second block time"; say "a new block every 6 seconds — credit card payment confirmation takes roughly 3–5 seconds, for comparison"
 
-#### 标题策略
+#### Title Strategy
 
-标题必须同时满足：
-1. **有信息量**：读者看完标题知道文章大致在说什么
-2. **有认知张力**：制造好奇心、挑战预期、或暗示独特视角
-3. **SEO 友好**：包含 Polkadot 相关关键词
-4. **科普亲和力**：非区块链读者也能被吸引
+The title must simultaneously satisfy:
+1. **Informative**: readers know roughly what the article is about after reading the title
+2. **Cognitive tension**: creates curiosity, challenges expectations, or hints at a unique perspective
+3. **SEO-friendly**: contains Polkadot-related keywords
+4. **Popular science appeal**: can attract readers who are not in blockchain
 
-标题句式参考：
-- `[说话人] 说了一句 [判断]——[主题] 正在发生什么`
-- `从一段 [N] 分钟的访谈看 [主题] 的 [核心变化]`
-- `[热点事件] 的真实内幕：[说话人] 在 [场合] 透露了什么`
-- `[技术概念] 到底是什么？——一段视频比白皮书讲得更清楚`
-- `[说话人] 的 [N] 个判断，[M] 个已经在链上发生了`
+Title sentence patterns for reference:
+- `[Speaker] said [judgment] — what is happening with [topic]`
+- `Reading [topic]'s [core change] through a [N]-minute interview`
+- `The real inside story of [hot event]: what [speaker] revealed at [occasion]`
+- `What exactly is [technical concept]? — A video explains it better than the whitepaper`
+- `[Speaker]'s [N] predictions — [M] of them are already happening on-chain`
 
-**禁止**：
-- 纯信息堆砌型标题："Polkadot 创始人访谈总结"
-- 空洞悬念型标题："震惊！Gavin Wood 居然说了……"
-- 视频搬运型标题："[视频标题] 中文翻译版"
+**Prohibited**:
+- Pure information-pile titles: "Polkadot Founder Interview Summary"
+- Empty suspense titles: "Shocking! Gavin Wood actually said…"
+- Video re-upload titles: "[Video title] — Chinese translation"
 
-#### 文章大纲
+#### Article Outline
 
-生成 4-7 个章节的大纲，每个章节标注素材来源。大纲须确保：
+Generate an outline of 4–7 sections, with each section annotated with its source material. The outline must ensure:
 
-- 开篇用视频中最有冲击力的一句话或一个判断制造认知张力
-- 中间有实质内容（视频原话 + 已有文章的技术佐证 + 类比解释）
-- 收尾有独立判断（不是"让我们拭目以待"）
+- Opening uses the most impactful line or judgment from the video to create cognitive tension
+- Middle has substantive content (video quotes + technical corroboration from existing articles + analogies)
+- Closing has an independent judgment (not "let us wait and see")
 
 ---
 
-### Step 4：撰写正文
+### Step 4: Write the body
 
-#### 写作风格
+#### Writing Style
 
-遵循 `assets/styles/_base.md` 的基础风格：
-- 冷静观察者视角，不是视频搬运工
-- 立场明确但基于事实
-- 长句为主，破折号插入补充说明
-- 敢于指出问题，承认不确定性
+Follow the base style in `assets/styles/_base.md`:
+- Calm observer perspective, not a video re-poster
+- Clear stance grounded in facts
+- Long sentences as primary form, with em-dashes for supplementary explanations
+- Willing to point out problems, acknowledge uncertainty
 
-#### 视频素材的特殊融合规则
+#### Special Integration Rules for Video Material
 
-**引用说话人原话**：
-- 每篇文章引用 3-5 句视频原话（英文原文 + 中文翻译），标注时间戳
-- 格式：`> "[英文原话]"（[时间戳]）`，下方紧跟中文翻译和分析
-- 选择标准：最能代表核心立场、最出人意料、或最能引发思考的表述
-- 不要引用口水话、重复表述或没有信息量的客套
+**Quoting the speaker's words**:
+- Quote 3–5 lines from the video per article (English original + Chinese translation), with timestamps
+- Format: `> "[English original]" ([timestamp])`, immediately followed by Chinese translation and analysis
+- Selection criteria: statements that most represent the core stance, most surprising, or most thought-provoking
+- Do not quote filler, repetitive statements, or pleasantries with no informational content
 
-**口语内容的书面化处理**：
-- 视频中的口语化表述需要提炼重组，不能直接搬运字幕的散乱句式
-- 保留说话人的核心判断和推理逻辑，但用书面语言重新组织
-- 说话人的犹豫、修正、自嘲等口语特征——如果有信息量，可以保留并点评
+**Converting spoken content to written form**:
+- Spoken expressions from the video need to be distilled and reorganised — do not directly copy the scattered subtitle sentences
+- Preserve the speaker's core judgment and reasoning logic, but reorganise in formal written language
+- Speaker's hesitation, self-corrections, and self-deprecating humour — if informative, these can be preserved and commented on
 
-**与已有文章的互补**：
-- 视频中提到某个技术概念 → 链接到已有文章中对该概念的完整技术分析
-- 视频中给出一个判断 → 用已有文章中的数据或机制拆解来验证/质疑
-- 已有文章中的抽象分析 → 用视频中的具体表述来"落地"
+**Complementing existing articles**:
+- Video mentions a technical concept → link to the complete technical analysis of that concept in an existing article
+- Video makes a judgment → use data or mechanism breakdown from an existing article to verify / challenge it
+- Abstract analysis in existing articles → use the video's concrete expressions to "ground" them
 
-#### 科普写作的关键技巧
+#### Key Techniques for Popular Science Writing
 
-1. **"先感受，后理解"原则**：先给一个具体场景或类比让读者产生直觉，再给技术解释
-2. **"一个概念一段话"原则**：每段只解释一个新概念，不要在同一段塞入多个术语
-3. **"删掉对读者没用的细节"原则**：除非直接支撑论点，否则不展开实现细节
-4. **"有人说过这句话"原则**：引用具体的人说的具体的话，比抽象总结更有说服力
+1. **"Feel first, understand second" principle**: first give a concrete scenario or analogy to build intuition, then give the technical explanation
+2. **"One concept per paragraph" principle**: each paragraph explains only one new concept — do not cram multiple terms into a single paragraph
+3. **"Delete details the reader doesn't need" principle**: unless it directly supports the argument, do not expand implementation details
+4. **"A specific person said this" principle**: quoting specific words from a specific person is more persuasive than abstract summary
 
-#### 格式要求
+#### Format Requirements
 
 ```markdown
 ---
-title: [创意标题]
+title: [Creative title]
 author: Yuki
-date: [执行当日日期，格式 YYYY-MM-DD]
+date: [Date of execution, format YYYY-MM-DD]
 source: [YouTube URL]
-categories: [分类]
-tags: [关键词列表]
+categories: [category]
+tags: [keyword list]
 ---
 
-> **摘要**：[200字以内，说清楚文章的核心论点和读者能获得什么]
+> **Abstract**: [under 200 characters — clearly state the article's core argument and what readers will gain]
 >
-> **关键词**：[6-10个]
+> **Keywords**: [6–10]
 
 ---
 
-[钩子段：用视频中最有冲击力的原话或判断开场，制造认知张力]
+[Hook paragraph: open with the most impactful quote or judgment from the video, creating cognitive tension]
 
-[立意段：1-2句话揭示本文的独特视角]
-
----
-
-## [章节标题——带判断，不是纯事实陈述]
-
-[正文内容]
-
-> "[视频原话英文]"（[时间戳]）
-
-[中文翻译 + 分析/解释/佐证]
+[Angle paragraph: 1–2 sentences revealing the article's unique perspective]
 
 ---
 
-## 小结
+## [Section title — carries a judgment, not a pure statement of fact]
 
-- **[要点1]**：[一句话]
-- **[要点2]**：[一句话]
-- **[要点3]**：[一句话]
+[Body content]
 
-[升华结语：提到更高层次，有力量感]
+> "[Video quote in English]" ([timestamp])
+
+[Chinese translation + analysis / explanation / corroboration]
 
 ---
 
-**参考资料**：
-- [视频标题](YouTube URL) —— 视频来源
-- [已有文章标题] —— 项目内引用（如直接引用了具体内容）
-- [其他外部链接] —— 视频中提到或相关的外部资料
+## 小结 (Summary)
+
+- **[Point 1]**: [one sentence]
+- **[Point 2]**: [one sentence]
+- **[Point 3]**: [one sentence]
+
+[Closing statement: elevate to a higher level, with force]
+
+---
+
+**References**:
+- [Video title](YouTube URL) —— video source
+- [Existing article title] —— internal project citations (if specific content was directly cited)
+- [Other external links] —— external resources mentioned in the video or otherwise relevant
 ```
 
-#### 字数要求
+#### Word Count Requirements
 
-- **1500-4000 字**（不含代码块与表格）
-- 信息密度优先于字数，不注水
-- 每个章节 200-600 字，节奏紧凑
-
----
-
-### Step 5：AI 去痕处理
-
-**必须执行**。将写好的正文按照 `templates/humanizer-zh.md` 进行全文检查：
-
-1. 判断文章风格类型（通常为"公众号/社区科普文章"）
-2. 逐一扫描 24 种 AI 写作模式
-3. 重写命中的问题片段
-4. 整体润色，确保节奏变化、衔接自然
-
-**去痕重点关注**：
-- 开头不要用"在……的背景下"、"随着……的发展"等 AI 开场套话
-- 不要每段都有"值得注意的是"、"此外"等连接词
-- 结尾不要用"未来充满希望"、"让我们拭目以待"等空洞收尾
-- 不要三个形容词并列："高效、安全、灵活"
-- 粗体不超过 5 处，破折号不超过 3 处
-- 科普文章特别注意：不要居高临下地"教育"读者，保持平视的叙述姿态
-
-**注意**：去痕处理直接应用到正文中，不需要输出修改前/后对比。
+- **1,500–4,000 characters** (excluding code blocks and tables)
+- Information density takes priority over word count — do not pad
+- Each section 200–600 characters, tight pacing
 
 ---
 
-### Step 6：保存文件
+### Step 5: AI de-fingerprinting
 
-1. 确认输出目录 `output/polkadot-hype-articles/` 存在
-2. 文件命名：`YYYYMMDD-[SEO标题关键词].md`
-   - 日期取执行当日
-   - 标题中空格替换为 `-`，去除特殊符号
-   - 长度控制在 50 字符以内
-3. 将完整文章写入文件
+**Must be executed**. Run the completed body through `templates/humanizer-zh.md` for a full check:
+
+1. Determine the article's style type (usually "WeChat/community popular science article")
+2. Scan through all 24 AI writing patterns
+3. Rewrite flagged problem passages
+4. Overall polish: ensure rhythm variation and natural transitions
+
+**Key de-fingerprinting focus areas**:
+- Opening must not use AI boilerplate openers like "In the context of…" or "As… continues to develop…"
+- Do not start every paragraph with "it is worth noting that", "in addition", or similar connectors
+- Closing must not use hollow endings like "the future is full of hope" or "let us wait and see"
+- Do not list three adjectives in parallel: "efficient, secure, flexible"
+- Bold text no more than 5 times; em-dashes no more than 3 times
+- For popular science articles, pay special attention to: do not adopt a condescending "teaching" posture toward readers — maintain an equal narrative stance
+
+**Note**: de-fingerprinting is applied directly — no need to output a before/after comparison.
 
 ---
 
-## 质量检查清单
+### Step 6: Save the file
 
-输出文件前逐项确认：
+1. Confirm that the output directory `output/polkadot-hype-articles/` exists
+2. File naming: `YYYYMMDD-[SEO-title-keywords].md`
+   - Date = date of execution
+   - Replace spaces in the title with `-`, remove special characters
+   - Keep length under 50 characters
+3. Write the complete article to the file
 
-- [ ] 已通过 youtube-ref 或手动方式获取了完整字幕
-- [ ] 已通读完整字幕（不仅依赖 Summary/Key Takeaways）
-- [ ] 已扫描 `output/` 目录并找到相关已有文章用于融合
-- [ ] 文章立意有新意，不是视频内容的简单翻译/搬运
-- [ ] 标题有信息量 + 认知张力 + SEO 关键词 + 科普亲和力
-- [ ] 开头用视频原话或核心判断制造了认知张力
-- [ ] 正文引用了 3-5 句视频原话（英文 + 中文 + 时间戳）
-- [ ] 关键技术概念在第一次出现时用类比或场景解释
-- [ ] 已有文章的内容作为佐证融入，不是主体
-- [ ] 已执行 humanizer-zh 去痕检查，无明显 AI 写作痕迹
-- [ ] 末尾有小结（要点 ≤5 条 + 升华结语）
-- [ ] 末尾有参考资料，视频链接 + 所有引用均已列出
-- [ ] 字数在 1500-4000 之间
-- [ ] 非区块链读者能看懂（每个术语有解释，有类比）
-- [ ] 文件已保存至 `output/polkadot-hype-articles/`
+---
+
+## Quality Checklist
+
+Confirm each item before outputting the file:
+
+- [ ] Full subtitles obtained via youtube-ref or manually
+- [ ] Full subtitles read in their entirety (not relying only on Summary / Key Takeaways)
+- [ ] Scanned the `output/` directory and found relevant existing articles for integration
+- [ ] Article angle is original — not a simple translation / re-post of the video content
+- [ ] Title has information + cognitive tension + SEO keywords + popular science appeal
+- [ ] Opening uses a video quote or core judgment to create cognitive tension
+- [ ] Body quotes 3–5 video lines (English + Chinese + timestamp)
+- [ ] Key technical concepts explained with analogy or scenario on first appearance
+- [ ] Content from existing articles integrated as corroboration, not the main body
+- [ ] Humanizer-zh de-fingerprinting check completed — no obvious AI writing patterns
+- [ ] Summary at the end (≤5 points + closing statement)
+- [ ] References at the end — video link + all citations listed
+- [ ] Word count between 1,500 and 4,000
+- [ ] Non-blockchain readers can follow along (every term has an explanation, analogies provided)
+- [ ] File saved to `output/polkadot-hype-articles/`

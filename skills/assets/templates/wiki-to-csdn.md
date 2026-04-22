@@ -1,346 +1,346 @@
-# Polkadot Wiki → 中文 CSDN 技术解析文章生成模板
+# Polkadot Wiki → Chinese CSDN Technical Explainer Article Template
 
-## 使用方式
+## How to Use
 
-将以下指令交给 Claude，把 `$URL` 替换为目标页面链接后执行：
+Hand the following instruction to Claude, replacing `$URL` with the target page link before executing:
 
-> 请按照 `templates/wiki-to-csdn.md` 的规则处理这个页面：`$URL`
+> Please process this page according to the rules in `templates/wiki-to-csdn.md`: `$URL`
 
-**URL 限制**：必须来自 `https://wiki.polkadot.network/` 域名下的任意页面。
+**URL restriction**: must come from any page under the `https://wiki.polkadot.network/` domain.
 
-**与 CSDN 教程模板的区别**：本模板生成的是**技术解析文章**，不是操作教程。
-目标是让读者**理解一个概念或机制**，而非完成一个操作步骤。
-
----
-
-## 执行步骤
-
-### Step 1：读取原文
-
-使用 WebFetch 工具抓取 `$URL` 页面的完整内容，包括：
-
-- 所有正文段落与章节结构
-- 所有数据、数字、性能指标（完整保留，不得篡改）
-- 所有表格、图表及图注
-- 页面标题和章节标题
-- 文末的参考链接（用于「延伸阅读」）
-
-若页面含有「下一页」或分页链接，询问用户是否需要连续处理后续页面。
+**How this differs from the CSDN tutorial template**: this template produces a **technical explainer article**, not a how-to tutorial.
+The goal is to help readers **understand a concept or mechanism**, not to walk through an operational sequence.
 
 ---
 
-### Step 2：提炼核心问题框架
+## Execution Steps
 
-在翻译前，先从原文中提炼出以下信息（不输出给用户，仅作为写作骨架）：
+### Step 1: Read the source
 
-1. **这篇文章解决的核心问题是什么？**（一句话）
-2. **旧机制 / 现状 / 背景**（为什么需要这个改变）
-3. **新机制的工作原理**（核心逻辑）
-4. **对开发者 / 用户的实际影响**（性能数字、使用场景）
-5. **与其他机制的依赖或协作关系**（如有）
-6. **后续演化方向**（如有）
+Use the WebFetch tool to retrieve the full content of the `$URL` page, including:
 
-这个框架决定文章的章节结构，不必照搬 wiki 原文的章节划分。
+- All body paragraphs and section structure
+- All data, figures, and performance metrics (preserve in full — must not be altered)
+- All tables, charts, and captions
+- Page title and section headings
+- Reference links at the bottom of the page (for use in the "Further Reading" section)
+
+If the page contains "Next page" or pagination links, ask the user whether to process subsequent pages in sequence.
 
 ---
 
-### Step 3：完整中文翻译与重构
+### Step 2: Distil the core problem framework
 
-将原文改写为中文技术解析文章，遵守以下规则。
+Before translating, extract the following from the source (do not output to the user — this is the writing skeleton only):
 
-#### 文章类型定位
+1. **What is the core problem this article solves?** (one sentence)
+2. **Old mechanism / current state / background** (why this change is needed)
+3. **How the new mechanism works** (core logic)
+4. **Actual impact on developers / users** (performance figures, use cases)
+5. **Dependencies or collaboration with other mechanisms** (if any)
+6. **Future evolution direction** (if any)
 
-本模板生成的文章是**技术解析 / 机制拆解**类，不是操作教程，不包含：
+This framework determines the article's section structure — it does not need to mirror the wiki source's section order.
 
-- 安装步骤、命令行操作、配置文件说明
-- "第一步…第二步…第三步"式流程
-- 完整代码实现
+---
 
-如果原文 wiki 页面本身是操作指南，请改用 `polkadot-docs-to-csdn.md` 模板。
+### Step 3: Full Chinese translation and restructuring
 
-#### 通用规则
+Rewrite the source as a Chinese technical explainer article, following the rules below.
 
-- 专业术语译法以下方「术语对照表」为准
-- 语句须通顺，符合中文阅读习惯，避免直译造成的生硬感
-- 所有章节标题翻译为中文
-- **数字、性能指标、引用数据必须与原文一致，不得估算或改动**
+#### Article Type Positioning
 
-#### 专业术语解释规则
+This template produces a **technical explainer / mechanism breakdown** article, not a how-to tutorial. It does not include:
 
-目标读者为**有一定技术背景但刚接触 Polkadot 的中文开发者**，遇到专业术语时须在**该术语首次出现时**用 1~2 句话进行简短解释。格式如下：
+- Installation steps, command-line operations, configuration file explanations
+- "Step 1… Step 2… Step 3…" procedural flows
+- Complete code implementations
 
-> **Async Backing（异步背书）**：Polkadot 2.0 引入的出块机制改进，允许平行链在上一个区块还未被中继链最终确认时就开始打包下一个区块，形成流水线，大幅提升出块效率。
+If the source wiki page is itself an operational guide, use the `polkadot-docs-to-csdn.md` template instead.
 
-规则细节：
-- **同一术语只解释一次**，后续出现直接使用，不重复说明
-- 解释用类比或对照说明，避免用另一个生僻术语解释
-- 下方「术语对照表」中标注 `[需解释]` 的术语必须添加解释
+#### General Rules
 
-#### 章节结构规则
+- Term translations follow the Terminology Reference Table below
+- Sentences must be fluent and natural in Chinese — avoid the awkward stiffness of literal translation
+- All section headings translated to Chinese
+- **Numbers, performance metrics, and cited data must match the source exactly — no estimation or modification**
 
-文章须按以下逻辑组织，而非照抄 wiki 原文章节顺序：
+#### Technical Term Explanation Rules
+
+The target reader is **a Chinese developer with some technical background who is new to Polkadot**. When a technical term appears, add a brief 1–2 sentence explanation **the first time the term appears**. Format:
+
+> **Async Backing (异步背书)**: a block production mechanism improvement introduced in Polkadot 2.0. It allows parachains to begin packaging the next block before the previous one has been finalised by the relay chain — forming a pipeline that significantly improves block production throughput.
+
+Rule details:
+- **Each term is explained only once** — subsequent occurrences use the term directly without repeating the explanation
+- Explanations use analogies or contrasts — avoid explaining one obscure term with another
+- Terms marked `[needs explanation]` in the Terminology Reference Table below must include an explanation
+
+#### Section Structure Rules
+
+Organise the article according to the following logic — do not copy the wiki source's section order:
 
 ```
-一、[机制/概念名称]：[一句话定位]
-    ├── 旧机制的问题（为什么需要改）
-    └── 新机制的工作原理（怎么运作）
+I. [Mechanism / concept name]: [one-line positioning]
+    ├── The problem with the old mechanism (why change is needed)
+    └── How the new mechanism works
 
-二、[第二个核心概念，如有]
+II. [Second core concept, if any]
     └── ...
 
-三、[各机制的协作关系，如有]
+III. [How the mechanisms interact, if applicable]
 
-四、[对开发者的实际意义 / 使用场景]
+IV. [Practical significance for developers / use cases]
 
-五、[后续演化方向，如有]
+V. [Future evolution direction, if any]
 
-小结（必须有）
+Summary (required)
 ```
 
-- 每个 H2 章节下可以有 H3 小节，但层级不超过三级
-- 每个章节聚焦一个核心论点，不堆砌信息
+- Each H2 section may have H3 sub-sections, but nesting must not exceed three levels
+- Each section focuses on one core argument — do not pile up information
 
-#### 表格与图表规则
+#### Table and Chart Rules
 
-- 表格内容翻译为中文
-- Mermaid 图或流程图：在图的下方用一段中文说明图表含义，同时保留原图
-- **数据表格（性能指标、参数对比）完整保留，数字不得更改**
+- Table content translated to Chinese
+- Mermaid diagrams or flow charts: add a Chinese paragraph below the diagram explaining its meaning, while preserving the original diagram
+- **Data tables (performance metrics, parameter comparisons) preserved in full — numbers must not be changed**
 
 ---
 
-### Step 4：生成元数据摘要
+### Step 4: Generate metadata summary
 
-翻译完成后，输出以下元数据块（置于文章开头 frontmatter 之后）：
+After translation is complete, output the following metadata block (placed after the frontmatter at the top of the article):
 
 ```
 ---
-摘要（200字以内）：
-[对本文核心机制的中文总结，说明"这个机制解决了什么问题、效果是什么"，面向开发者，具体]
+Abstract (under 200 characters):
+[Chinese summary of the article's core mechanism — "what problem does this mechanism solve and what is the outcome" — aimed at developers, specific]
 
-关键词：
-[6~10个，兼顾技术精准性与 SEO 搜索热度]
+Keywords:
+[6–10, balancing technical precision with SEO search relevance]
 
-适用平台：
-CSDN、掘金、微信公众号
+Platforms:
+CSDN, Juejin, WeChat Official Account
 
-分类：
-[从以下选项中选择最匹配的1~2项：Polkadot 生态 / 智能合约开发 / Web3 入门 / 区块链架构 / 性能优化 / 跨链技术]
+Categories:
+[Select the 1–2 best matches from: Polkadot Ecosystem / Smart Contract Development / Web3 Introduction / Blockchain Architecture / Performance Optimisation / Cross-Chain Technology]
 ---
 ```
 
 ---
 
-### Step 5：整理为 CSDN 发布格式
+### Step 5: Format for CSDN publication
 
-按以下格式输出完整文章，遵守以下规则：
+Output the complete article in the following format, following these rules:
 
-#### 字数要求
+#### Word Count Requirements
 
-- **最少 1000 字，最多 5000 字**（不含代码块与表格）
-- 根据原文信息量自然决定篇幅，不强行注水
-- 若原文信息量不足 1000 字，通过以下方式扩充：
-  - 对核心机制展开更详细的背景解释
-  - 补充"对开发者意味着什么"的实际场景举例
-  - 在末尾补充「小结」对比旧机制与新机制
-- 若原文翻译后超过 5000 字，保留核心逻辑，精简背景铺垫
+- **Minimum 1,000 characters, maximum 5,000 characters** (excluding code blocks and tables)
+- Let the amount of information in the source naturally determine the length — do not pad artificially
+- If the source has fewer than 1,000 characters of information, expand by:
+  - More detailed background explanation of the core mechanism
+  - Adding concrete real-world examples under "what this means for developers"
+  - Appending a "Summary" section comparing the old and new mechanisms
+- If the translated source exceeds 5,000 characters, preserve the core logic and condense background exposition
 
-#### 文章开头规则
+#### Article Opening Rules
 
-开头由**两个段落**组成，缺一不可：
+The opening consists of **two paragraphs**, both required:
 
-**第一段：钩子段（引人入胜）**
+**First paragraph: hook (engaging the reader)**
 
-制造认知张力或强烈好奇心，让读者产生继续阅读的冲动。选择以下任一策略：
+Create cognitive tension or strong curiosity that makes the reader want to keep reading. Choose one of the following strategies:
 
-- **问题切入型**：直指读者脑中已有的困惑，让他感到"这正是我想搞清楚的"
-  > 示例："Polkadot 2.0 这个词在社区里喊了很久，但落地的三个技术改动——Async Backing、Agile Coretime、Elastic Scaling——很多人并不清楚它们各自解决的是什么问题，改变了什么。"
-- **结论前置型**：先抛出一个让读者意外的强结论，再用正文解释它为什么成立
-  > 示例："你现在写的以太坊合约，可以不改一行代码直接部署到 Polkadot 上——而且手续费更低、性能更强。"
-- **对比切入型**：用旧机制的根本局限直接引出新机制，制造认知落差
-  > 示例："插槽拍卖曾经是进入 Polkadot 的唯一门票：锁定大量 DOT，竞拍两年的平行链位置。现在这套机制已经被彻底替换。"
+- **Problem-first**: directly address a confusion the reader already has, making them feel "this is exactly what I want to understand"
+  > Example: "Polkadot 2.0 has been a buzzword in the community for a long time, but the three specific technical changes — Async Backing, Agile Coretime, Elastic Scaling — are something many people don't clearly understand in terms of what each one solves."
+- **Conclusion-first**: lead with a surprising strong conclusion, then use the article body to explain why it is true
+  > Example: "The Ethereum contract you are writing now can be deployed directly to Polkadot without changing a single line of code — and with lower fees and better performance."
+- **Contrast-first**: introduce the fundamental limitation of the old mechanism to bring in the new one, creating a cognitive gap
+  > Example: "Slot auctions used to be the only ticket into Polkadot: lock up a large amount of DOT, bid for two years of parachain access. That system has now been completely replaced."
 
-**第二段：认知地图段（高度抽象概括）**
+**Second paragraph: cognitive map (highly abstract overview)**
 
-用 1~3 句话告诉读者：读完这篇文章，他的认知会发生什么转变，或者他将理解什么更深层的逻辑。
-不是"本文将介绍"，而是"这件事的本质是……"或"理解它需要先看清……"。
+In 1–3 sentences, tell the reader: after reading this article, what will shift in their understanding, or what deeper logic will they grasp.
+Not "this article will introduce…" — instead "the essence of this is…" or "understanding it requires first seeing…".
 
-> 示例："这三件事不是独立的功能更新，而是一套互相依赖的架构重构，合在一起才能发挥全部效果。"
+> Example: "These three things are not independent feature updates — they are a set of mutually dependent architectural changes that only deliver their full effect when combined."
 
-> 示例："理解 Coretime，需要先看清 Polkadot 的资源分配哲学：算力是商品，不是资格证。"
+> Example: "Understanding Coretime requires first seeing Polkadot's resource allocation philosophy: computing power is a commodity, not a credential."
 
-规则：
-- 认知地图段须高度抽象，不罗列具体技术点，不重复标题内容
-- 语气是陈述判断，不是预告内容（禁止"接下来我们将……"）
-- 两段之间不加分隔线，自然衔接
+Rules:
+- The cognitive map paragraph must be highly abstract — no listing of specific technical points, no repeating the title
+- The tone is a statement of judgment, not a preview of content (prohibited: "next we will…")
+- No divider between the two paragraphs — natural transition
 
-**禁止**使用平铺直叙的背景介绍作为第一段（如"本文将介绍……"、"Polkadot 是一个……"）。
+**Prohibited**: using a flat background introduction as the first paragraph (e.g. "This article will introduce…", "Polkadot is a…").
 
-#### 标题规则
+#### Title Rules
 
-- 做 SEO 优化，使用开发者常搜索的关键词
-- 格式参考："[主题] | [核心技术点] 深度解析"、"[机制名称]：[一句话描述改变]"、"深入理解 [概念]：[核心价值]"
-- 避免"完整指南"、"操作教程"等教程类句式（本模板面向解析类内容）
+- SEO-optimised, using keywords developers commonly search for
+- Format reference: "[topic] | [core technical point] in depth", "[mechanism name]: [one-line description of the change]", "Understanding [concept] in depth: [core value]"
+- Avoid tutorial-style phrases like "complete guide", "hands-on tutorial", "beginner's intro" (this template targets explainer content)
 
-#### 小结规则（必须有）
+#### Summary Rules (required)
 
-文章末尾须有「小结」章节，由**两部分**组成：
+The end of the article must include a "Summary" section consisting of **two parts**:
 
-**第一部分：要点浓缩**
+**Part one: key points condensed**
 
-用最精简的语言列出本文核心结论，每条一句话，不超过 5 条：
+List the article's core conclusions in the most concise language — one sentence each, no more than 5 items:
 
 ```markdown
-## 小结
+## 小结 (Summary)
 
-- **[要点1]**：[一句话总结]
-- **[要点2]**：[一句话总结]
-- **[要点3]**：[一句话总结]
+- **[Point 1]**: [one-sentence summary]
+- **[Point 2]**: [one-sentence summary]
+- **[Point 3]**: [one-sentence summary]
 ```
 
-**第二部分：升华结尾（必须有，单独成段）**
+**Part two: closing statement (required, as its own paragraph)**
 
-在要点列表之后，另起一段，写一句或两句**升华性结语**。
+After the bullet list, start a new paragraph with one or two **elevating closing sentences**.
 
-要求：
-- 不重复任何已说过的具体技术点
-- 将文章内容提升到更高的抽象层次——可以是技术哲学、行业意义、或对读者认知的挑战
-- 有力量感，像一篇好文章最后的收笔，而不是总结陈述
+Requirements:
+- Does not repeat any specific technical point already made
+- Lifts the article's content to a higher level of abstraction — can be technical philosophy, industry significance, or a challenge to the reader's thinking
+- Has force — like the final strokes of a good article, not a summary statement
 
-> 好示例："三者合力，让 Polkadot 从一个'多链协议框架'演进成一个真正能够承载高性能应用的可扩展平台。"
+> Good example: "Combined, the three create a path for Polkadot to evolve from a 'multi-chain protocol framework' into a truly scalable platform capable of supporting high-performance applications."
 >
-> 好示例："算力不再是资格证，而是商品——这个转变背后，是 Polkadot 对'去中心化基础设施应该如何定价'这个问题的一次深刻回答。"
+> Good example: "Computing power is no longer a credential — it is a commodity. Behind that shift is Polkadot's deep answer to the question of how decentralised infrastructure should be priced."
 >
-> 差示例（禁止）："本文介绍了三大技术支柱，希望对你有所帮助。"
+> Bad example (prohibited): "This article introduced three major technical pillars. Hope it was helpful."
 
-#### 参考资料规则
+#### Reference Rules
 
-文章末尾须附「参考资料」章节，包含 wiki 原文中出现的**所有外部链接**，一条不漏：
-- wiki 原文链接（第一条，必须）
-- 原文正文、脚注、延伸阅读中提及的所有链接（全部收录）
-- 按原文出现顺序排列，不筛选，不删减
-
-```markdown
----
-
-**参考资料**：
-- [文章主题英文名](wiki原文URL)
-- [相关链接标题](URL)
-- [相关链接标题](URL)
-```
-
-#### 完整文章格式
+The end of the article must include a "References" section containing **all external links** from the wiki source — not one omitted:
+- The wiki source URL (first entry, required)
+- All links referenced in the source body, footnotes, and further reading (include every one)
+- Listed in the order they appear in the source — no filtering, no removal
 
 ```markdown
 ---
-title: [SEO 优化中文标题]
-author: 原文来源：Polkadot Wiki
-date: [执行当日日期，格式 YYYY-MM-DD]
-categories: [分类]
-tags: [关键词列表]
+
+**References**:
+- [English name of article topic](wiki source URL)
+- [Related link title](URL)
+- [Related link title](URL)
+```
+
+#### Complete Article Format
+
+```markdown
+---
+title: [SEO-optimised Chinese title]
+author: Source: Polkadot Wiki
+date: [Date of execution, format YYYY-MM-DD]
+categories: [category]
+tags: [keyword list]
 ---
 
-> **摘要**：[200字以内的摘要]
+> **Abstract**: [under 200-character abstract]
 >
-> **关键词**：[关键词]
+> **Keywords**: [keywords]
 
 ---
 
-[钩子段：引人入胜，制造认知张力]
+[Hook paragraph: engaging, creates cognitive tension]
 
-[认知地图段：高度抽象概括文章的核心视角或判断]
-
----
-
-## 一、[章节标题]
-
-### [小节标题（如有）]
-
-[正文内容]
+[Cognitive map paragraph: highly abstract summary of the article's core perspective or judgment]
 
 ---
 
-## 小结
+## I. [Section heading]
 
-- **[要点1]**：[一句话总结]
-- **[要点2]**：[一句话总结]
-- **[要点3]**：[一句话总结]
+### [Sub-section heading (if any)]
 
-[升华结语：提升到更高抽象层次，有力量感，不重复上面的要点]
+[Body content]
 
 ---
 
-**参考资料**：
-- [标题](URL)
+## 小结 (Summary)
+
+- **[Point 1]**: [one-sentence summary]
+- **[Point 2]**: [one-sentence summary]
+- **[Point 3]**: [one-sentence summary]
+
+[Closing statement: elevate to higher abstraction, with force — does not repeat the bullet points]
+
+---
+
+**References**:
+- [Title](URL)
 ```
 
 ---
 
-### Step 6：保存文件
+### Step 6: Save the file
 
-1. 确认输出目录 `output/polkadot-hype-articles/` 存在，不存在则创建
-2. 文件命名规则：`YYYYMMDD-[SEO标题].md`
-   - 日期取执行时的当日日期
-   - 标题中的空格替换为 `-`，去除 `/`、`:`、`？` 等特殊符号
-3. 将完整文章写入该文件
+1. Confirm that the output directory `output/polkadot-hype-articles/` exists — create it if not
+2. File naming rule: `YYYYMMDD-[SEO-title].md`
+   - Date = date of execution
+   - Replace spaces in the title with `-`, remove `/`, `:`, `?`, and other special characters
+3. Write the complete article to the file
 
 ---
 
-## 术语对照表
+## Terminology Reference Table
 
-翻译时优先遵循下表，表中未列出的术语保留英文原文。标注 `[需解释]` 的术语须在首次出现时添加 1~2 句中文解释。
+During translation, follow this table first. Terms not in the table keep their English original. Terms marked `[needs explanation]` must include a 1–2 sentence Chinese explanation on first appearance.
 
-| 英文 | 中文译法 | 备注 |
+| English | Chinese Translation | Note |
 |------|----------|------|
-| parachain | 平行链 | [需解释] 连接到 Polkadot 中继链的独立区块链，共享中继链的安全性，同时保持自己的逻辑与状态 |
-| relay chain | 中继链 | [需解释] Polkadot 的核心链，负责协调各平行链之间的共识与通信，相当于整个网络的"主干" |
-| collator | 收集人（Collator） | [需解释] 平行链节点，负责收集用户交易、打包区块候选，然后提交给中继链验证人审核 |
-| validator | 验证人 | [需解释] 负责验证区块、维护网络安全的节点，需要质押 DOT 作为抵押 |
+| parachain | 平行链 | [needs explanation] An independent blockchain connected to the Polkadot relay chain, sharing its security while maintaining its own logic and state |
+| relay chain | 中继链 | [needs explanation] Polkadot's core chain, responsible for coordinating consensus and communication among parachains — the "backbone" of the network |
+| collator | 收集人（Collator） | [needs explanation] A parachain node responsible for collecting user transactions, packaging block candidates, and submitting them to relay chain validators for review |
+| validator | 验证人 | [needs explanation] A node responsible for validating blocks and maintaining network security, required to stake DOT as collateral |
 | nominator | 提名人 | |
-| governance | 治理 | [需解释] 链上的去中心化决策机制，持币者可以投票决定协议升级、资金使用等重大事项 |
-| treasury | 国库 | [需解释] 由治理管理的链上资金池，用于资助生态项目和开发者 |
-| slot auction | 插槽拍卖 | [需解释] Polkadot 1.0 的资源分配机制，项目通过竞拍获得两年期的平行链接入权限 |
-| coretime | 算力时间（Coretime） | [需解释] Polkadot 2.0 中对中继链出块与验证资源的抽象单位，可以按需购买和出售 |
-| core | 核心（Core） | 中继链上的一个并行验证插槽，代表一定量的出块和验证能力 |
-| Async Backing | 异步背书（Async Backing） | [需解释] Polkadot 2.0 的出块机制改进，允许平行链在上一区块确认前就开始打包下一区块，形成流水线 |
-| Agile Coretime | 敏捷算力时间（Agile Coretime） | [需解释] 用市场化方式替代插槽拍卖，允许按需或批量购买中继链核心的使用权 |
-| Elastic Scaling | 弹性扩展（Elastic Scaling） | [需解释] 允许平行链同时占用多个核心并行处理区块，突破单核吞吐量上限 |
-| unincluded segment | 未包含区块段 | Async Backing 引入的概念，指已打包但尚未被中继链最终包含的平行链区块队列 |
-| finality | 最终确认 | [需解释] 区块被永久写入链上、不可逆转的状态，与"区块生产"不同 |
-| extrinsic | 外部调用（extrinsic） | [需解释] Substrate 中从链外发起的操作请求，类似以太坊中的"交易"，但范围更广 |
-| weight | 权重 | [需解释] Substrate 用来衡量一笔操作计算复杂度的单位，决定该操作消耗多少手续费 |
-| staking | 质押 | [需解释] 将代币锁定在网络中以参与共识或获得奖励的机制 |
-| slashing | 惩罚（slash） | [需解释] 当验证人出现恶意行为或严重失误时，其质押的代币会被没收一部分 |
-| cross-chain | 跨链 | [需解释] 不同区块链之间传递数据或资产的能力 |
-| XCM | XCM（保留英文） | [需解释] 跨共识消息格式（Cross-Consensus Messaging），Polkadot 生态中链与链之间传递消息和资产的标准协议 |
-| smart contract | 智能合约 | [需解释] 部署在区块链上的自动执行程序，满足预设条件时自动运行，无需人工干预 |
-| ink! | ink!（保留英文） | [需解释] Polkadot 生态中用 Rust 语言编写智能合约的框架，编译为 WASM 在链上运行 |
-| Substrate | Substrate（保留英文） | [需解释] Polkadot 生态的区块链开发框架，Polkadot 本身也是用 Substrate 构建的 |
-| EVM | EVM（保留英文） | [需解释] 以太坊虚拟机（Ethereum Virtual Machine），支持 EVM 的链都可以运行 Solidity 合约 |
-| Revive | Revive（保留英文） | [需解释] 将 Solidity 合约编译为 PVM（RISC-V）字节码的编译器，让以太坊合约在 Polkadot 原生环境中运行 |
-| PVM | PVM（保留英文） | [需解释] Polkadot 虚拟机（Polkadot Virtual Machine），基于 RISC-V 指令集的原生执行环境 |
-| JAM | JAM（保留英文） | [需解释] Join-Accumulate Machine，Polkadot 下一代核心协议，目标是把中继链泛化为通用计算基础设施 |
-| WASM / WebAssembly | WASM / WebAssembly（保留英文） | [需解释] 一种高效的二进制指令格式，可在不同平台上运行 |
-| pallet | pallet（保留英文） | [需解释] Substrate 框架中的功能模块，类似乐高积木，开发者可以组合不同 pallet 来构建区块链功能 |
-| runtime | runtime（保留英文） | [需解释] 区块链的核心逻辑层，定义了链上所有规则和状态转换，相当于区块链的"操作系统" |
-| RPC | RPC（保留英文） | |
+| governance | 治理 | [needs explanation] The on-chain decentralised decision-making mechanism — token holders can vote on protocol upgrades, fund usage, and other major matters |
+| treasury | 国库 | [needs explanation] An on-chain fund pool managed by governance, used to fund ecosystem projects and developers |
+| slot auction | 插槽拍卖 | [needs explanation] Polkadot 1.0's resource allocation mechanism — projects bid to secure two-year parachain access |
+| coretime | 算力时间（Coretime） | [needs explanation] In Polkadot 2.0, the abstract unit representing relay chain block production and validation resources — can be purchased and sold on demand |
+| core | 核心（Core） | A parallel validation slot on the relay chain representing a certain amount of block production and validation capacity |
+| Async Backing | 异步背书（Async Backing） | [needs explanation] A Polkadot 2.0 block production improvement — allows parachains to begin packaging the next block before the previous one is confirmed, forming a pipeline |
+| Agile Coretime | 敏捷算力时间（Agile Coretime） | [needs explanation] Replaces slot auctions with a market-based approach — allows on-demand or bulk purchase of relay chain core usage rights |
+| Elastic Scaling | 弹性扩展（Elastic Scaling） | [needs explanation] Allows a parachain to occupy multiple cores simultaneously for parallel block processing, breaking through single-core throughput limits |
+| unincluded segment | 未包含区块段 | A concept introduced by Async Backing — the queue of parachain blocks that have been packaged but not yet finally included by the relay chain |
+| finality | 最终确认 | [needs explanation] The state where a block is permanently written to the chain and irreversible — distinct from "block production" |
+| extrinsic | 外部调用（extrinsic） | [needs explanation] In Substrate, an operation request initiated from outside the chain — similar to an Ethereum "transaction" but broader in scope |
+| weight | 权重 | [needs explanation] The unit Substrate uses to measure the computational complexity of an operation, determining how much fee it consumes |
+| staking | 质押 | [needs explanation] Locking tokens in the network to participate in consensus or earn rewards |
+| slashing | 惩罚（slash） | [needs explanation] When a validator acts maliciously or makes a severe error, a portion of their staked tokens is confiscated |
+| cross-chain | 跨链 | [needs explanation] The ability to transfer data or assets between different blockchains |
+| XCM | XCM (keep English) | [needs explanation] Cross-Consensus Messaging — the standard protocol in the Polkadot ecosystem for passing messages and assets between chains |
+| smart contract | 智能合约 | [needs explanation] A program deployed on a blockchain that executes automatically when pre-set conditions are met, without human intervention |
+| ink! | ink! (keep English) | [needs explanation] The framework for writing smart contracts in Rust in the Polkadot ecosystem — compiles to WASM and runs on-chain |
+| Substrate | Substrate (keep English) | [needs explanation] The blockchain development framework for the Polkadot ecosystem — Polkadot itself is built with Substrate |
+| EVM | EVM (keep English) | [needs explanation] Ethereum Virtual Machine — chains that support EVM can run Solidity contracts |
+| Revive | Revive (keep English) | [needs explanation] A compiler that compiles Solidity contracts into PVM (RISC-V) bytecode, allowing Ethereum contracts to run natively on Polkadot |
+| PVM | PVM (keep English) | [needs explanation] Polkadot Virtual Machine — the native execution environment based on the RISC-V instruction set |
+| JAM | JAM (keep English) | [needs explanation] Join-Accumulate Machine — Polkadot's next-generation core protocol, aiming to generalise the relay chain into a universal computing infrastructure |
+| WASM / WebAssembly | WASM / WebAssembly (keep English) | [needs explanation] An efficient binary instruction format that can run across different platforms |
+| pallet | pallet (keep English) | [needs explanation] A functional module in the Substrate framework — like LEGO bricks, developers can combine different pallets to build blockchain features |
+| runtime | runtime (keep English) | [needs explanation] The core logic layer of a blockchain, defining all on-chain rules and state transitions — analogous to the blockchain's "operating system" |
+| RPC | RPC (keep English) | |
 | epoch | 时期 | |
 | era | 纪元 | |
 
 ---
 
-## 质量检查清单
+## Quality Checklist
 
-输出文件前，逐项确认：
+Confirm each item before outputting the file:
 
-- [ ] 文章类型正确：是概念解析 / 机制拆解，不是操作教程
-- [ ] 开头第一段：使用了引人入胜策略（问题切入 / 结论前置 / 对比切入），未使用平铺直叙
-- [ ] 开头第二段：高度抽象概括了文章的核心视角或判断（认知地图段），不是内容预告
-- [ ] 所有数字、性能指标与原文一致，未被篡改或估算
-- [ ] 术语对照表中标注 `[需解释]` 的术语，首次出现时均已添加 1~2 句解释，且每个术语只解释一次
-- [ ] 章节结构符合「旧问题 → 新机制 → 实际意义」逻辑，而非照抄 wiki 原文结构
-- [ ] 元数据（摘要、关键词、分类）已填写
-- [ ] 标题已做 SEO 优化，使用解析类句式而非教程类句式
-- [ ] 末尾有「小结」章节：要点列表（≤5条）+ 升华结语（单独成段，不重复要点，有力量感）
-- [ ] 末尾有「参考资料」章节，包含 wiki 原文中出现的**所有**链接，无遗漏
-- [ ] 文章字数在 1000~5000 字之间（不含代码块与表格）
-- [ ] 文件已保存至 `output/polkadot-hype-articles/`，命名符合规则
+- [ ] Article type is correct: concept explainer / mechanism breakdown, not a how-to tutorial
+- [ ] Opening paragraph 1: uses an engaging strategy (problem-first / conclusion-first / contrast-first) — not a flat background introduction
+- [ ] Opening paragraph 2: highly abstract summary of the article's core perspective or judgment (cognitive map) — not a content preview
+- [ ] All numbers and performance metrics match the source — not altered or estimated
+- [ ] Terms marked `[needs explanation]` in the Terminology Reference Table each have a 1–2 sentence explanation on first appearance, and each term is explained only once
+- [ ] Section structure follows "old problem → new mechanism → practical significance" logic — not a copy of the wiki source structure
+- [ ] Metadata (abstract, keywords, categories) filled in
+- [ ] Title is SEO-optimised, uses explainer-style phrasing rather than tutorial-style
+- [ ] End has a "Summary" section: bullet points (≤5) + closing statement (own paragraph, does not repeat bullets, has force)
+- [ ] End has a "References" section containing **all** links from the wiki source — none missing
+- [ ] Article word count between 1,000 and 5,000 (excluding code blocks and tables)
+- [ ] File saved to `output/polkadot-hype-articles/`, naming follows the rules
