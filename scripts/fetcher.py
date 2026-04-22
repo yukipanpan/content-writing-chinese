@@ -57,17 +57,35 @@ def fetch_youtube(url: str) -> FetchResult:
         return FetchResult(url, "youtube", "", "", f"Could not extract video ID from: {url}")
 
     try:
-        # Try English first, then Chinese, then any available
-        try:
-            segments = YouTubeTranscriptApi.get_transcript(video_id, languages=["en"])
-        except NoTranscriptFound:
-            try:
-                segments = YouTubeTranscriptApi.get_transcript(video_id, languages=["zh", "zh-Hans", "zh-Hant"])
-            except NoTranscriptFound:
-                transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
-                segments = next(iter(transcript_list)).fetch()
+        # youtube-transcript-api >= 0.7 uses an instance-based API;
+        # older versions used class methods. Support both.
+        api = YouTubeTranscriptApi()
+        _fetch = getattr(api, "fetch", None)
+        _list  = getattr(api, "list",  None)
 
-        text = " ".join(s["text"] for s in segments)
+        if _fetch:
+            # New API (>= 0.7)
+            try:
+                fetched = _fetch(video_id, languages=["en"])
+            except NoTranscriptFound:
+                try:
+                    fetched = _fetch(video_id, languages=["zh", "zh-Hans", "zh-Hant"])
+                except NoTranscriptFound:
+                    transcript_list = _list(video_id)
+                    fetched = next(iter(transcript_list)).fetch()
+            text = " ".join(s.text for s in fetched)
+        else:
+            # Legacy API (< 0.7)
+            try:
+                segments = YouTubeTranscriptApi.get_transcript(video_id, languages=["en"])
+            except NoTranscriptFound:
+                try:
+                    segments = YouTubeTranscriptApi.get_transcript(video_id, languages=["zh", "zh-Hans", "zh-Hant"])
+                except NoTranscriptFound:
+                    transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+                    segments = next(iter(transcript_list)).fetch()
+            text = " ".join(s["text"] for s in segments)
+
         title = f"YouTube video {video_id}"
         content = (
             f"[YouTube Transcript]\n"
