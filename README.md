@@ -113,7 +113,7 @@ Gavin Wood 在 GrayPaper 里说得很直接：「JAM 不是区块链，它是一
 
 | Field | What to enter |
 |-------|--------------|
-| `source_urls` | One or more URLs. One per line or comma-separated. |
+| `source_urls` | One or more URLs. One per line or comma-separated. Web pages and blog posts work in CI. **YouTube and Twitter/X are local-only** — GitHub Actions runners are blocked by both platforms. |
 | `intent` | What you want to write — free text (see examples below). |
 | `generate_snippets` | `yes` to save sources into the knowledge base. |
 
