@@ -80,6 +80,7 @@ jobs:
           {
             echo "content<<$DELIM"
             cat pr_body.md
+            echo ""
             echo "$DELIM"
           } >> $GITHUB_OUTPUT
 
