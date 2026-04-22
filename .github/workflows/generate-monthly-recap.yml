@@ -50,7 +50,7 @@ jobs:
             --month "${{ steps.resolve.outputs.month }}"
 
       - name: Open pull request with recap
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           title: "recap: ${{ steps.resolve.outputs.month }} monthly recap"
           body: |

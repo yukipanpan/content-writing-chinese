@@ -85,7 +85,7 @@ jobs:
           } >> $GITHUB_OUTPUT
 
       - name: Open PR with outline for review
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           title: "content: ${{ inputs.intent }}"
           body: ${{ steps.pr_body.outputs.content }}
