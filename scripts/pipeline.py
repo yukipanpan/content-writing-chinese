@@ -86,7 +86,7 @@ Based on the source material below, produce a structured English outline.
 Output ONLY this format (no text outside the tags):
 
 <outline>
-**Working title:** [specific, opinionated title — not generic]
+**Working title:** [verb-led phrase + object, max 8 words, no questions, no "Overview/Introduction/Guide to" — e.g. "Why Polkadot Bets on Shared Security Over Rollups"]
 
 **Type:** {article_type}
 
@@ -263,6 +263,17 @@ def parse_urls(raw: str) -> list[str]:
     return [u.strip() for u in re.split(r"[,\n]+", raw) if u.strip()]
 
 
+def make_outline_path(intent: str) -> Path:
+    """Generate outlines/YYYY-MM-DD-{slug}.md from intent text."""
+    slug = intent.lower().strip()
+    slug = re.sub(r"[^\w\s-]", "", slug)
+    slug = re.sub(r"[\s_]+", "-", slug).strip("-")[:50]
+    filename = f"{date.today().strftime('%Y-%m-%d')}-{slug}.md"
+    path = Path("outlines") / filename
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return path
+
+
 def save_article(content: str, article_type: str, urls: list[str], output_dir: str | None) -> Path:
     out = Path(output_dir) if output_dir else OUTPUT_DIRS.get(article_type, Path("output"))
     out.mkdir(parents=True, exist_ok=True)
@@ -341,8 +352,14 @@ def run_phase1(args) -> None:
         discovered_urls=discovered_urls,
         kb_matches=kb_matches,
     )
-    Path(args.pr_body_file).write_text(pr_body)
-    print(f"\n  PR body written → {args.pr_body_file}", file=sys.stderr)
+
+    # Auto-generate path if caller passed the sentinel default
+    out_path = Path(args.pr_body_file)
+    if args.pr_body_file == "pr_body.md":
+        out_path = make_outline_path(args.intent)
+
+    out_path.write_text(pr_body)
+    print(f"\n  outline saved → {out_path}", file=sys.stderr)
 
     if snippet_results:
         Path("snippet_changes.txt").write_text("\n".join(r.filename for r in snippet_results))

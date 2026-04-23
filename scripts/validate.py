@@ -57,12 +57,19 @@ def validate_phase2(pr_body_file: str) -> None:
     from pathlib import Path
     path = Path(pr_body_file)
     if not path.exists():
+        # Try to find the most recent outline as a hint
+        outlines_dir = Path("outlines")
+        hint = ""
+        if outlines_dir.exists():
+            candidates = sorted(outlines_dir.glob("*.md"), reverse=True)
+            if candidates:
+                hint = f"\n   Most recent outline: {candidates[0]}"
         sys.exit(
-            f"❌ PR body file not found: {pr_body_file!r}\n"
-            "   Run phase1 first to generate it."
+            f"❌ Outline file not found: {pr_body_file!r}{hint}\n"
+            "   Run phase1 first to generate it, or pass --pr-body-file <path>."
         )
     if path.stat().st_size == 0:
         sys.exit(
-            f"❌ PR body file is empty: {pr_body_file!r}\n"
+            f"❌ Outline file is empty: {pr_body_file!r}\n"
             "   The phase1 run may have failed — check for errors above."
         )

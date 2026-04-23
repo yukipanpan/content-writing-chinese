@@ -20,5 +20,8 @@ pr_body.md
 outline.txt
 snippet_changes.txt
 
+# Local outline drafts (commit selectively if you want to track them)
+outlines/
+
 # Local env (never commit real keys)
 .env

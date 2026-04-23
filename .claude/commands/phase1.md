@@ -56,7 +56,7 @@ python3 scripts/run_skill.py phase1 \
 
 ## After the command
 
-1. Read `pr_body.md` and show the outline section to the user in full.
+1. Read the outline file just created in `outlines/` (the script prints the path) and show the outline section to the user in full.
 2. Show the Sources section so the user can see which URLs were manual, auto-discovered, and loaded from the knowledge base.
 3. **STOP. Ask the user:**
    > "Does this outline look right? Edit any section, angle, or claims before proceeding.
