@@ -33,7 +33,7 @@ Then type:
 /phase1 https://polkadot.com/blog/jam-update  intent: analytical piece on JAM
 ```
 
-Review the outline → `/generate` → Chinese article saved to `output/`.
+Outline saved to `outlines/` → review it → `/generate` → Chinese article saved to `output/`.
 
 ---
 
@@ -73,24 +73,25 @@ Works with any OpenAI-compatible endpoint — OpenAI, Groq, Mistral, Ollama, LM 
 
 ```bash
 # Step 1 — fetch sources + generate English outline (manual URLs)
+# Outline is auto-saved to outlines/YYYY-MM-DD-{slug}.md
 python3 scripts/run_skill.py phase1 \
   --urls "https://example.com/post, https://youtu.be/xyz" \
   --intent "analytical piece on staking economics" \
-  --generate-snippets --pr-body-file pr_body.md
+  --generate-snippets
 
 # Step 1 — auto-discover sources from a topic
 python3 scripts/run_skill.py phase1 \
   --topic "Polkadot JAM upgrade 2025" \
   --intent "analytical piece on JAM" \
-  --top-n 5 --generate-snippets --pr-body-file pr_body.md
+  --top-n 5 --generate-snippets
 
 # Step 1 — both (manual precision + auto breadth)
 python3 scripts/run_skill.py phase1 \
   --urls "https://graypaper.com" --topic "Polkadot JAM" \
-  --intent "deep dive" --generate-snippets --pr-body-file pr_body.md
+  --intent "deep dive" --generate-snippets
 
-# Step 2 — review pr_body.md, then generate the Chinese article
-python3 scripts/run_skill.py phase2 --pr-body-file pr_body.md
+# Step 2 — review the outline in outlines/, then generate the Chinese article
+python3 scripts/run_skill.py phase2 --pr-body-file outlines/2026-04-23-deep-dive.md
 
 # Optional — monthly recap article (synthesises all snippets from a given month)
 python3 scripts/run_skill.py monthly-recap --month 2026-04
@@ -192,6 +193,7 @@ Every Phase 1 run with `--generate-snippets` saves structured records to `refere
 │   └── snippets.py              ← Snippet generation, dedup, update
 ├── .github/workflows/           ← GitHub Actions (CI automation)
 ├── .claude/commands/            ← Claude Code slash commands
+├── outlines/                    ← English outlines pending review (gitignored)
 ├── references/snippets/         ← Knowledge base
 ├── output/                      ← Generated articles
 ├── examples/                    ← Sample outputs
