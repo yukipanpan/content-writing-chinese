@@ -56,9 +56,13 @@ python3 scripts/run_skill.py phase1 \
 
 ## After the command
 
-1. Read `pr_body.md` and show the outline section to the user.
+1. Read `pr_body.md` and show the outline section to the user in full.
 2. Show the Sources section so the user can see which URLs were manual, auto-discovered, and loaded from the knowledge base.
-3. Ask: "Does this outline look right? Edit any section or angle, then run `/generate` to produce the Chinese article."
+3. **STOP. Ask the user:**
+   > "Does this outline look right? Edit any section, angle, or claims before proceeding.
+   > When you're happy with it, run `/generate` to produce the Chinese article."
+
+   Do not run `/generate` or proceed further. The user must explicitly trigger the next step themselves.
 
 ## Notes
 
